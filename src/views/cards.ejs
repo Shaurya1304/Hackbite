@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My GitHub Cards</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+      border-bottom: 1px solid #ddd;
+      margin-bottom: 30px;
+    }
+    .user-profile {
+      display: flex;
+      align-items: center;
+    }
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+    .logout-button {
+      background-color: transparent;
+      color: #666;
+      border: 1px solid #ddd;
+      padding: 8px 16px;
+      border-radius: 4px;
+      margin-left: 15px;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+    }
+    .logout-button:hover {
+      background-color: #f8f8f8;
+      color: #333;
+    }
+    .nav-links {
+      display: flex;
+      gap: 20px;
+    }
+    .nav-links a {
+      color: #0366d6;
+      text-decoration: none;
+    }
+    .nav-links a:hover {
+      text-decoration: underline;
+    }
+    .page-title {
+      margin-bottom: 30px;
+      color: #24292e;
+    }
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      transition: transform 0.3s ease;
+      position: relative;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+    }
+    .card-name {
+      color: #0366d6;
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .card-description {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 15px;
+      min-height: 40px;
+    }
+    .card-language {
+      display: flex;
+      align-items: center;
+      font-size: 12px;
+      color: #586069;
+      margin-bottom: 15px;
+    }
+    .language-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 5px;
+    }
+    .card-stats {
+      display: flex;
+      gap: 15px;
+      font-size: 12px;
+      color: #586069;
+    }
+    .card-stat {
+      display: flex;
+      align-items: center;
+    }
+    .card-stat svg {
+      margin-right: 5px;
+      width: 14px;
+      height: 14px;
+    }
+    .card-link {
+      display: inline-block;
+      padding: 8px 16px;
+      background-color: #0366d6;
+      color: white;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 14px;
+      transition: background-color 0.3s;
+    }
+    .card-link:hover {
+      background-color: #0256b9;
+    }
+    .card-actions {
+      margin-top: 15px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .delete-button {
+      background-color: #d73a49;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: background-color 0.3s;
+    }
+    .delete-button:hover {
+      background-color: #cb2431;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 60px 0;
+    }
+    .empty-state-icon {
+      font-size: 60px;
+      margin-bottom: 20px;
+      color: #d1d5da;
+    }
+    .empty-state-title {
+      font-size: 24px;
+      color: #24292e;
+      margin-bottom: 10px;
+    }
+    .empty-state-message {
+      font-size: 16px;
+      color: #586069;
+      margin-bottom: 30px;
+    }
+    .empty-state-button {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #0366d6;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 16px;
+      transition: background-color 0.3s;
+    }
+    .empty-state-button:hover {
+      background-color: #0256b9;
+    }
+    /* Modal styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      width: 90%;
+      max-width: 800px;
+      max-height: 80vh;
+      overflow-y: auto;
+      padding: 25px;
+      position: relative;
+    }
+    .modal-close {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: none;
+      border: none;
+      font-size: 22px;
+      cursor: pointer;
+      color: #586069;
+    }
+    .modal-header {
+      border-bottom: 1px solid #eee;
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+    }
+    .modal-title {
+      font-size: 22px;
+      color: #24292e;
+      margin: 0 0 5px;
+    }
+    .modal-subtitle {
+      font-size: 14px;
+      color: #586069;
+    }
+    .modal-tabs {
+      display: flex;
+      border-bottom: 1px solid #eee;
+      margin-bottom: 20px;
+    }
+    .modal-tab {
+      padding: 10px 15px;
+      cursor: pointer;
+      color: #586069;
+      border-bottom: 2px solid transparent;
+      margin-right: 10px;
+    }
+    .modal-tab.active {
+      color: #0366d6;
+      border-bottom-color: #0366d6;
+    }
+    .modal-content {
+      min-height: 200px;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .commit-item {
+      padding: 15px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .commit-item:last-child {
+      border-bottom: none;
+    }
+    .commit-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .commit-title {
+      font-weight: bold;
+      color: #24292e;
+    }
+    .commit-date {
+      color: #586069;
+      font-size: 12px;
+    }
+    .commit-author {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 13px;
+      color: #586069;
+    }
+    .author-avatar {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+    .commit-message {
+      font-size: 14px;
+      color: #24292e;
+      margin-bottom: 8px;
+      word-break: break-word;
+    }
+    .commit-sha {
+      font-family: monospace;
+      background-color: #f6f8fa;
+      padding: 2px 5px;
+      font-size: 12px;
+      border-radius: 3px;
+      color: #586069;
+    }
+    .repo-info-item {
+      display: flex;
+      padding: 12px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .repo-info-label {
+      flex: 0 0 120px;
+      color: #586069;
+      font-size: 14px;
+    }
+    .repo-info-value {
+      flex: 1;
+      color: #24292e;
+      font-size: 14px;
+    }
+    .branch-item {
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      align-items: center;
+    }
+    .branch-name {
+      font-weight: bold;
+      color: #0366d6;
+      margin-right: 10px;
+    }
+    .default-badge {
+      background-color: #2ea44f;
+      color: white;
+      font-size: 11px;
+      padding: 1px 6px;
+      border-radius: 10px;
+    }
+    .loading-spinner {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 200px;
+    }
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #0366d6;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .pulse {
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.4; }
+      100% { opacity: 1; }
+    }
+    .error-message {
+      color: #cb2431;
+      text-align: center;
+      padding: 20px;
+    }
+    .contributors-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    .contributor {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 80px;
+    }
+    .contributor-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      margin-bottom: 5px;
+    }
+    .contributor-name {
+      font-size: 12px;
+      color: #0366d6;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h2>My GitHub Cards</h2>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/github/repos">Repositories</a>
+        <a href="/github/profile">Profile</a>
+      </div>
+      <% if (isLoggedIn) { %>
+        <div class="user-profile">
+          <a href="/github/profile" style="display: flex; align-items: center; text-decoration: none; color: inherit;">
+            <img src="<%= user.photoURL %>" alt="Profile" class="user-avatar">
+            <span><%= user.displayName %></span>
+          </a>
+          <a href="/auth/logout" class="logout-button">Logout</a>
+        </div>
+      <% } %>
+    </header>
+
+    <main>
+      <h1 class="page-title">My Saved Repository Cards</h1>
+      
+      <div id="cardsContainer" class="cards-grid">
+        <!-- Cards will be loaded from localStorage via JavaScript -->
+      </div>
+      
+      <div id="emptyState" class="empty-state" style="display: none;">
+        <div class="empty-state-icon">📚</div>
+        <h2 class="empty-state-title">No Saved Cards Yet</h2>
+        <p class="empty-state-message">You haven't saved any repository cards yet. Browse repositories and click "Save as Card" to add them here.</p>
+        <a href="/github/repos" class="empty-state-button">Browse Repositories</a>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal overlay -->
+  <div class="modal-overlay" id="repoModal">
+    <div class="modal">
+      <button class="modal-close" id="modalClose">&times;</button>
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitle">Repository Details</h3>
+        <p class="modal-subtitle" id="modalSubtitle"></p>
+      </div>
+      <div class="modal-tabs">
+        <div class="modal-tab active" data-tab="commits">Commits</div>
+        <div class="modal-tab" data-tab="info">Info</div>
+        <div class="modal-tab" data-tab="branches">Branches</div>
+        <div class="modal-tab" data-tab="contributors">Contributors</div>
+      </div>
+      <div class="modal-content">
+        <div class="tab-content active" id="commitsTab">
+          <div class="loading-spinner" id="commitsLoading">
+            <div class="spinner"></div>
+          </div>
+          <div id="commitsContent"></div>
+        </div>
+        <div class="tab-content" id="infoTab">
+          <div class="loading-spinner" id="infoLoading">
+            <div class="spinner"></div>
+          </div>
+          <div id="infoContent"></div>
+        </div>
+        <div class="tab-content" id="branchesTab">
+          <div class="loading-spinner" id="branchesLoading">
+            <div class="spinner"></div>
+          </div>
+          <div id="branchesContent"></div>
+        </div>
+        <div class="tab-content" id="contributorsTab">
+          <div class="loading-spinner" id="contributorsLoading">
+            <div class="spinner"></div>
+          </div>
+          <div id="contributorsContent"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const cardsContainer = document.getElementById('cardsContainer');
+      const emptyState = document.getElementById('emptyState');
+      const modal = document.getElementById('repoModal');
+      const modalClose = document.getElementById('modalClose');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalSubtitle = document.getElementById('modalSubtitle');
+      const modalTabs = document.querySelectorAll('.modal-tab');
+      const tabContents = document.querySelectorAll('.tab-content');
+      
+      // Current repository being viewed
+      let currentRepo = null;
+      
+      // Load cards from localStorage
+      function loadCards() {
+        const savedCards = JSON.parse(localStorage.getItem('githubCards') || '[]');
+        
+        if (savedCards.length === 0) {
+          // Show empty state
+          cardsContainer.style.display = 'none';
+          emptyState.style.display = 'block';
+          return;
+        }
+        
+        // Hide empty state
+        cardsContainer.style.display = 'grid';
+        emptyState.style.display = 'none';
+        
+        // Clear container
+        cardsContainer.innerHTML = '';
+        
+        // Add cards
+        savedCards.forEach(card => {
+          const cardElement = document.createElement('div');
+          cardElement.className = 'card';
+          cardElement.setAttribute('data-id', card.id);
+          cardElement.setAttribute('data-name', card.name);
+          cardElement.setAttribute('data-url', card.url);
+          
+          cardElement.innerHTML = `
+            <h3 class="card-name"><a href="${card.url}" target="_blank">${card.name}</a></h3>
+            <div class="card-description">
+              ${card.description || 'No description provided'}
+            </div>
+            
+            ${card.language ? `
+              <div class="card-language">
+                <span class="language-color" style="background-color: ${card.languageColor || '#8257e5'}"></span>
+                ${card.language}
+              </div>
+            ` : ''}
+            
+            <div class="card-stats">
+              <div class="card-stat">
+                <svg viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25zm0 2.445L6.615 5.5a.75.75 0 01-.564.41l-3.097.45 2.24 2.184a.75.75 0 01.216.664l-.528 3.084 2.769-1.456a.75.75 0 01.698 0l2.77 1.456-.53-3.084a.75.75 0 01.216-.664l2.24-2.183-3.096-.45a.75.75 0 01-.564-.41L8 2.694v.001z"></path>
+                </svg>
+                ${card.stars} stars
+              </div>
+              <div class="card-stat">
+                <svg viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M5 3.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm0 2.122a2.25 2.25 0 10-1.5 0v.878A2.25 2.25 0 005.75 8.5h1.5v2.128a2.251 2.251 0 101.5 0V8.5h1.5a2.25 2.25 0 002.25-2.25v-.878a2.25 2.25 0 10-1.5 0v.878a.75.75 0 01-.75.75h-4.5A.75.75 0 015 6.25v-.878zm3.75 7.378a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm3-8.75a.75.75 0 100-1.5.75.75 0 000 1.5z"></path>
+                </svg>
+                ${card.forks} forks
+              </div>
+            </div>
+            
+            <div class="card-actions">
+              <a href="${card.url}" class="card-link" target="_blank">View Repository</a>
+              <button class="delete-button" data-id="${card.id}">Remove</button>
+            </div>
+          `;
+          
+          // Add click event to show repo details modal
+          cardElement.addEventListener('click', function(e) {
+            // Don't show modal if clicking a link or button
+            if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON' || 
+                e.target.closest('a') || e.target.closest('button')) {
+              return;
+            }
+            
+            const repoName = this.getAttribute('data-name');
+            showRepoModal(repoName);
+          });
+          
+          cardsContainer.appendChild(cardElement);
+        });
+        
+        // Add event listeners to delete buttons
+        document.querySelectorAll('.delete-button').forEach(button => {
+          button.addEventListener('click', function() {
+            const cardId = parseInt(this.getAttribute('data-id'));
+            removeCard(cardId);
+          });
+        });
+      }
+      
+      // Remove a card
+      function removeCard(cardId) {
+        let savedCards = JSON.parse(localStorage.getItem('githubCards') || '[]');
+        savedCards = savedCards.filter(card => card.id !== cardId);
+        localStorage.setItem('githubCards', JSON.stringify(savedCards));
+        
+        // Show notification
+        showNotification('Card removed');
+        
+        // Reload cards
+        loadCards();
+      }
+      
+      // Show repository details in modal
+      function showRepoModal(repoFullName) {
+        currentRepo = repoFullName;
+        
+        // Show modal
+        modal.style.display = 'flex';
+        modalTitle.textContent = repoFullName;
+        modalSubtitle.textContent = 'Loading repository details...';
+        
+        // Reset and activate first tab
+        modalTabs.forEach(tab => tab.classList.remove('active'));
+        tabContents.forEach(content => content.classList.remove('active'));
+        modalTabs[0].classList.add('active');
+        tabContents[0].classList.add('active');
+        
+        // Show loading state for all tabs
+        document.getElementById('commitsLoading').style.display = 'flex';
+        document.getElementById('infoLoading').style.display = 'flex';
+        document.getElementById('branchesLoading').style.display = 'flex';
+        document.getElementById('contributorsLoading').style.display = 'flex';
+        
+        // Clear previous content
+        document.getElementById('commitsContent').innerHTML = '';
+        document.getElementById('infoContent').innerHTML = '';
+        document.getElementById('branchesContent').innerHTML = '';
+        document.getElementById('contributorsContent').innerHTML = '';
+        
+        // Load commits (first tab is active by default)
+        loadCommits(repoFullName);
+      }
+      
+      // Load repository commits
+      async function loadCommits(repoFullName) {
+        try {
+          const response = await fetch(`/github/repo-commits?repo=${encodeURIComponent(repoFullName)}`);
+          
+          if (!response.ok) {
+            throw new Error(`Failed to fetch commits: ${response.status}`);
+          }
+          
+          const data = await response.json();
+          
+          // Hide loading spinner
+          document.getElementById('commitsLoading').style.display = 'none';
+          
+          // Update modal subtitle with repo description if available
+          if (data.repository && data.repository.description) {
+            modalSubtitle.textContent = data.repository.description;
+          }
+          
+          const commitsContent = document.getElementById('commitsContent');
+          
+          if (!data.commits || data.commits.length === 0) {
+            commitsContent.innerHTML = '<div class="error-message">No commits found for this repository.</div>';
+            return;
+          }
+          
+          // Display commits
+          commitsContent.innerHTML = data.commits.map(commit => `
+            <div class="commit-item">
+              <div class="commit-header">
+                <div class="commit-title">${commit.commit.message.split('\n')[0]}</div>
+                <div class="commit-date">${new Date(commit.commit.author.date).toLocaleString()}</div>
+              </div>
+              <div class="commit-author">
+                <img src="${commit.author ? commit.author.avatar_url : 'https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png'}" class="author-avatar">
+                ${commit.author ? commit.author.login : commit.commit.author.name}
+              </div>
+              <div class="commit-message">
+                ${commit.commit.message.replace(/\n/g, '<br>')}
+              </div>
+              <a href="${commit.html_url}" class="commit-sha" target="_blank">${commit.sha.substring(0, 7)}</a>
+            </div>
+          `).join('');
+          
+        } catch (error) {
+          console.error('Error fetching commits:', error);
+          
+          // Hide loading spinner
+          document.getElementById('commitsLoading').style.display = 'none';
+          
+          // Show error message
+          document.getElementById('commitsContent').innerHTML = `
+            <div class="error-message">
+              Failed to load commits. Please try again later.<br>
+              Error: ${error.message}
+            </div>
+          `;
+        }
+      }
+      
+      // Load repository info
+      async function loadRepoInfo(repoFullName) {
+        try {
+          const response = await fetch(`/github/repo-info?repo=${encodeURIComponent(repoFullName)}`);
+          
+          if (!response.ok) {
+            throw new Error(`Failed to fetch repository info: ${response.status}`);
+          }
+          
+          const data = await response.json();
+          
+          // Hide loading spinner
+          document.getElementById('infoLoading').style.display = 'none';
+          
+          const infoContent = document.getElementById('infoContent');
+          
+          if (!data.repository) {
+            infoContent.innerHTML = '<div class="error-message">No repository information found.</div>';
+            return;
+          }
+          
+          const repo = data.repository;
+          
+          // Display repository info
+          infoContent.innerHTML = `
+            <div class="repo-info-item">
+              <div class="repo-info-label">Owner</div>
+              <div class="repo-info-value">
+                <a href="${repo.owner.html_url}" target="_blank">${repo.owner.login}</a>
+              </div>
+            </div>
+            <div class="repo-info-item">
+              <div class="repo-info-label">Created</div>
+              <div class="repo-info-value">${new Date(repo.created_at).toLocaleDateString()}</div>
+            </div>
+            <div class="repo-info-item">
+              <div class="repo-info-label">Last Updated</div>
+              <div class="repo-info-value">${new Date(repo.updated_at).toLocaleDateString()}</div>
+            </div>
+            <div class="repo-info-item">
+              <div class="repo-info-label">Default Branch</div>
+              <div class="repo-info-value">${repo.default_branch}</div>
+            </div>
+            <div class="repo-info-item">
+              <div class="repo-info-label">Language</div>
+              <div class="repo-info-value">${repo.language || 'Not specified'}</div>
+            </div>
+            <div class="repo-info-item">
+              <div class="repo-info-label">Open Issues</div>
+              <div class="repo-info-value">${repo.open_issues_count}</div>
+            </div>
+            <div class="repo-info-item">
+              <div class="repo-info-label">Stars</div>
+              <div class="repo-info-value">${repo.stargazers_count}</div>
+            </div>
+            <div class="repo-info-item">
+              <div class="repo-info-label">Forks</div>
+              <div class="repo-info-value">${repo.forks_count}</div>
+            </div>
+            <div class="repo-info-item">
+              <div class="repo-info-label">Watchers</div>
+              <div class="repo-info-value">${repo.watchers_count}</div>
+            </div>
+            <div class="repo-info-item">
+              <div class="repo-info-label">License</div>
+              <div class="repo-info-value">${repo.license ? repo.license.name : 'Not specified'}</div>
+            </div>
+          `;
+          
+        } catch (error) {
+          console.error('Error fetching repository info:', error);
+          
+          // Hide loading spinner
+          document.getElementById('infoLoading').style.display = 'none';
+          
+          // Show error message
+          document.getElementById('infoContent').innerHTML = `
+            <div class="error-message">
+              Failed to load repository information. Please try again later.<br>
+              Error: ${error.message}
+            </div>
+          `;
+        }
+      }
+      
+      // Load repository branches
+      async function loadBranches(repoFullName) {
+        try {
+          const response = await fetch(`/github/repo-branches?repo=${encodeURIComponent(repoFullName)}`);
+          
+          if (!response.ok) {
+            throw new Error(`Failed to fetch branches: ${response.status}`);
+          }
+          
+          const data = await response.json();
+          
+          // Hide loading spinner
+          document.getElementById('branchesLoading').style.display = 'none';
+          
+          const branchesContent = document.getElementById('branchesContent');
+          
+          if (!data.branches || data.branches.length === 0) {
+            branchesContent.innerHTML = '<div class="error-message">No branches found for this repository.</div>';
+            return;
+          }
+          
+          // Get default branch
+          const defaultBranch = data.repository ? data.repository.default_branch : null;
+          
+          // Display branches
+          branchesContent.innerHTML = data.branches.map(branch => `
+            <div class="branch-item">
+              <div class="branch-name">${branch.name}</div>
+              ${branch.name === defaultBranch ? '<span class="default-badge">default</span>' : ''}
+            </div>
+          `).join('');
+          
+        } catch (error) {
+          console.error('Error fetching branches:', error);
+          
+          // Hide loading spinner
+          document.getElementById('branchesLoading').style.display = 'none';
+          
+          // Show error message
+          document.getElementById('branchesContent').innerHTML = `
+            <div class="error-message">
+              Failed to load branches. Please try again later.<br>
+              Error: ${error.message}
+            </div>
+          `;
+        }
+      }
+      
+      // Load repository contributors
+      async function loadContributors(repoFullName) {
+        try {
+          const response = await fetch(`/github/repo-contributors?repo=${encodeURIComponent(repoFullName)}`);
+          
+          if (!response.ok) {
+            throw new Error(`Failed to fetch contributors: ${response.status}`);
+          }
+          
+          const data = await response.json();
+          
+          // Hide loading spinner
+          document.getElementById('contributorsLoading').style.display = 'none';
+          
+          const contributorsContent = document.getElementById('contributorsContent');
+          
+          if (!data.contributors || data.contributors.length === 0) {
+            contributorsContent.innerHTML = '<div class="error-message">No contributors found for this repository.</div>';
+            return;
+          }
+          
+          // Display contributors
+          contributorsContent.innerHTML = `
+            <div class="contributors-list">
+              ${data.contributors.map(contributor => `
+                <div class="contributor">
+                  <img src="${contributor.avatar_url}" class="contributor-avatar">
+                  <div class="contributor-name">${contributor.login}</div>
+                </div>
+              `).join('')}
+            </div>
+          `;
+          
+        } catch (error) {
+          console.error('Error fetching contributors:', error);
+          
+          // Hide loading spinner
+          document.getElementById('contributorsLoading').style.display = 'none';
+          
+          // Show error message
+          document.getElementById('contributorsContent').innerHTML = `
+            <div class="error-message">
+              Failed to load contributors. Please try again later.<br>
+              Error: ${error.message}
+            </div>
+          `;
+        }
+      }
+      
+      // Tab switching
+      modalTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+          const tabName = this.getAttribute('data-tab');
+          
+          // Update active tab
+          modalTabs.forEach(t => t.classList.remove('active'));
+          this.classList.add('active');
+          
+          // Update active content
+          tabContents.forEach(content => content.classList.remove('active'));
+          document.getElementById(tabName + 'Tab').classList.add('active');
+          
+          // Load data for the selected tab if needed
+          if (currentRepo) {
+            if (tabName === 'commits' && document.getElementById('commitsContent').innerHTML === '') {
+              loadCommits(currentRepo);
+            } else if (tabName === 'info' && document.getElementById('infoContent').innerHTML === '') {
+              loadRepoInfo(currentRepo);
+            } else if (tabName === 'branches' && document.getElementById('branchesContent').innerHTML === '') {
+              loadBranches(currentRepo);
+            } else if (tabName === 'contributors' && document.getElementById('contributorsContent').innerHTML === '') {
+              loadContributors(currentRepo);
+            }
+          }
+        });
+      });
+      
+      // Close modal
+      modalClose.addEventListener('click', function() {
+        modal.style.display = 'none';
+        currentRepo = null;
+      });
+      
+      // Close modal when clicking outside
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+          modal.style.display = 'none';
+          currentRepo = null;
+        }
+      });
+      
+      // Function to show notifications
+      function showNotification(message) {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.style.position = 'fixed';
+        notification.style.bottom = '20px';
+        notification.style.right = '20px';
+        notification.style.backgroundColor = '#0366d6';
+        notification.style.color = 'white';
+        notification.style.padding = '12px 20px';
+        notification.style.borderRadius = '4px';
+        notification.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+        notification.style.zIndex = '1000';
+        notification.style.transition = 'all 0.3s ease';
+        notification.textContent = message;
+        
+        // Add to DOM
+        document.body.appendChild(notification);
+        
+        // Remove after 3 seconds
+        setTimeout(() => {
+          notification.style.opacity = '0';
+          setTimeout(() => {
+            document.body.removeChild(notification);
+          }, 300);
+        }, 3000);
+      }
+      
+      // Load cards on page load
+      loadCards();
+      
+      // Listen for storage events to update cards when changed in other tabs
+      window.addEventListener('storage', function(e) {
+        if (e.key === 'githubCards') {
+          loadCards();
+        }
+      });
+    });
+  </script>
+</body>
+</html> 

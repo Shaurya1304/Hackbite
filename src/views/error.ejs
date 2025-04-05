@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Error - Node App</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+      border-bottom: 1px solid #ddd;
+      margin-bottom: 30px;
+    }
+    .user-profile {
+      display: flex;
+      align-items: center;
+    }
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+    .logout-button {
+      background-color: transparent;
+      color: #666;
+      border: 1px solid #ddd;
+      padding: 8px 16px;
+      border-radius: 4px;
+      margin-left: 15px;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+    }
+    .logout-button:hover {
+      background-color: #f8f8f8;
+      color: #333;
+    }
+    .error-card {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    .error-icon {
+      font-size: 64px;
+      color: #e74c3c;
+      margin-bottom: 20px;
+    }
+    .error-title {
+      font-size: 24px;
+      color: #e74c3c;
+      margin-bottom: 20px;
+    }
+    .error-description {
+      color: #666;
+      margin-bottom: 30px;
+    }
+    .error-details {
+      background-color: #f7f7f7;
+      padding: 15px;
+      border-radius: 4px;
+      color: #777;
+      text-align: left;
+      font-family: monospace;
+      white-space: pre-wrap;
+      margin-bottom: 30px;
+    }
+    .button {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #3498db;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+    .button:hover {
+      background-color: #2980b9;
+    }
+    .nav-links {
+      display: flex;
+      gap: 20px;
+    }
+    .nav-links a {
+      color: #0366d6;
+      text-decoration: none;
+    }
+    .nav-links a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h2>Node App</h2>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <% if (isLoggedIn) { %>
+          <a href="/github/repos">Repositories</a>
+          <a href="/github/profile">Profile</a>
+        <% } %>
+      </div>
+      <% if (isLoggedIn) { %>
+        <div class="user-profile">
+          <a href="/github/profile" style="display: flex; align-items: center; text-decoration: none; color: inherit;">
+            <img src="<%= user.photoURL %>" alt="Profile" class="user-avatar">
+            <span><%= user.displayName %></span>
+          </a>
+          <a href="/auth/logout" class="logout-button">Logout</a>
+        </div>
+      <% } %>
+    </header>
+
+    <main>
+      <div class="error-card">
+        <div class="error-icon">❌</div>
+        <h1 class="error-title"><%= message %></h1>
+        <p class="error-description">Something went wrong while processing your request.</p>
+        
+        <% if (error) { %>
+          <div class="error-details">
+            <%= error %>
+          </div>
+        <% } %>
+        
+        <a href="/" class="button">Return to Home</a>
+      </div>
+    </main>
+  </div>
+</body>
+</html> 
