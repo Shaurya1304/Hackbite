@@ -590,6 +590,8 @@
       const searchInput = document.getElementById('searchInput');
       const searchSuggestions = document.getElementById('searchSuggestions');
       const searchForm = document.getElementById('searchForm');
+      const projectsContainer = document.getElementById('projectsContainer');
+      const contributorsContainer = document.getElementById('contributorsContainer');
       
       let timeout = null;
       
@@ -680,6 +682,308 @@
           fetchSuggestions(searchInput.value);
         }
       });
+      
+      // Load popular open source projects
+      const loadPopularProjects = async () => {
+        try {
+          // Try to fetch from API first
+          let popularProjects = [];
+          let useDefaultData = false;
+          
+          try {
+            const response = await fetch('/github/popular-repos');
+            if (response.ok) {
+              const data = await response.json();
+              if (data.repositories && data.repositories.length > 0) {
+                popularProjects = data.repositories;
+              } else {
+                useDefaultData = true;
+              }
+            } else {
+              useDefaultData = true;
+            }
+          } catch (apiError) {
+            console.error('API error:', apiError);
+            useDefaultData = true;
+          }
+          
+          // Fall back to default data if API call fails
+          if (useDefaultData) {
+            popularProjects = [
+              {
+                name: 'tensorflow/tensorflow',
+                description: 'An open source machine learning framework for everyone',
+                stargazers_count: 174000,
+                forks_count: 88000,
+                language: 'C++',
+                languageColor: '#f34b7d',
+                html_url: 'https://github.com/tensorflow/tensorflow',
+                open_issues_count: 2800
+              },
+              {
+                name: 'facebook/react',
+                description: 'A declarative, efficient, and flexible JavaScript library for building user interfaces',
+                stargazers_count: 204000,
+                forks_count: 42000,
+                language: 'JavaScript',
+                languageColor: '#f1e05a',
+                html_url: 'https://github.com/facebook/react',
+                open_issues_count: 1100
+              },
+              {
+                name: 'microsoft/vscode',
+                description: 'Visual Studio Code is a code editor redefined and optimized for building and debugging modern web and cloud applications',
+                stargazers_count: 147000,
+                forks_count: 25700,
+                language: 'TypeScript',
+                languageColor: '#2b7489',
+                html_url: 'https://github.com/microsoft/vscode',
+                open_issues_count: 7800
+              },
+              {
+                name: 'kubernetes/kubernetes',
+                description: 'Production-Grade Container Scheduling and Management',
+                stargazers_count: 98600,
+                forks_count: 36400,
+                language: 'Go',
+                languageColor: '#00ADD8',
+                html_url: 'https://github.com/kubernetes/kubernetes',
+                open_issues_count: 2300
+              },
+              {
+                name: 'flutter/flutter',
+                description: 'Flutter makes it easy and fast to build beautiful apps for mobile and beyond',
+                stargazers_count: 151000,
+                forks_count: 24500,
+                language: 'Dart',
+                languageColor: '#00B4AB',
+                html_url: 'https://github.com/flutter/flutter',
+                open_issues_count: 11300
+              },
+              {
+                name: 'torvalds/linux',
+                description: 'Linux kernel source tree',
+                stargazers_count: 154000,
+                forks_count: 50000,
+                language: 'C',
+                languageColor: '#555555',
+                html_url: 'https://github.com/torvalds/linux',
+                open_issues_count: 300
+              },
+              {
+                name: 'python/cpython',
+                description: 'The Python programming language',
+                stargazers_count: 54000,
+                forks_count: 27700,
+                language: 'Python',
+                languageColor: '#3572A5',
+                html_url: 'https://github.com/python/cpython',
+                open_issues_count: 1500
+              }
+            ];
+          }
+          
+          // Clear container
+          projectsContainer.innerHTML = '';
+          
+          // Add project cards
+          popularProjects.forEach(project => {
+            const projectCard = document.createElement('div');
+            projectCard.className = 'project-card';
+            
+            projectCard.innerHTML = `
+              <div class="project-header">
+                <h3 class="project-name">${project.name || project.full_name}</h3>
+                <div class="project-stars">
+                  <svg viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"></path>
+                  </svg>
+                  ${(project.stargazers_count || project.stars).toLocaleString()}
+                </div>
+              </div>
+              <div class="project-description">${project.description || 'No description available'}</div>
+              <div class="project-stats">
+                <div class="project-stat">
+                  <svg viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M5 3.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm0 2.122a2.25 2.25 0 10-1.5 0v.878A2.25 2.25 0 005.75 8.5h1.5v2.128a2.251 2.251 0 101.5 0V8.5h1.5a2.25 2.25 0 002.25-2.25v-.878a2.25 2.25 0 10-1.5 0v.878a.75.75 0 01-.75.75h-4.5A.75.75 0 015 6.25v-.878zm3.75 7.378a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm3-8.75a.75.75 0 100-1.5.75.75 0 000 1.5z"></path>
+                  </svg>
+                  ${(project.forks_count || project.forks).toLocaleString()} forks
+                </div>
+                <div class="project-stat">
+                  <svg viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8zm9 3a1 1 0 11-2 0 1 1 0 012 0zm-.25-6.25a.75.75 0 00-1.5 0v3.5a.75.75 0 001.5 0v-3.5z"></path>
+                  </svg>
+                  ${(project.open_issues_count || project.open_issues).toLocaleString()} issues
+                </div>
+              </div>
+              ${project.language ? `
+              <div class="project-language">
+                <span class="project-language-color" style="background-color: ${project.languageColor}"></span>
+                <span class="project-language-name">${project.language}</span>
+              </div>
+              ` : ''}
+              <div class="project-links">
+                <a href="${project.html_url}" class="project-link" target="_blank">View on GitHub</a>
+                <button class="project-save" 
+                  data-repo="${project.name || project.full_name}" 
+                  data-stars="${project.stargazers_count || project.stars}" 
+                  data-forks="${project.forks_count || project.forks}" 
+                  data-language="${project.language || ''}" 
+                  data-color="${project.languageColor || '#000000'}" 
+                  data-url="${project.html_url}" 
+                  data-description="${(project.description || 'No description available').replace(/"/g, '&quot;')}">Save as Card</button>
+              </div>
+            `;
+            
+            projectsContainer.appendChild(projectCard);
+          });
+          
+          // Add event listeners to save buttons
+          document.querySelectorAll('.project-save').forEach(button => {
+            button.addEventListener('click', function() {
+              const repoData = {
+                id: Date.now(), // Use timestamp as unique ID
+                name: this.getAttribute('data-repo'),
+                stars: parseInt(this.getAttribute('data-stars')),
+                forks: parseInt(this.getAttribute('data-forks')),
+                language: this.getAttribute('data-language'),
+                languageColor: this.getAttribute('data-color'),
+                url: this.getAttribute('data-url'),
+                description: this.getAttribute('data-description')
+              };
+              
+              saveRepoCard(repoData);
+            });
+          });
+        } catch (error) {
+          console.error('Error loading popular projects:', error);
+          projectsContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">Failed to load popular projects. Please try again later.</div>';
+        }
+      };
+      
+      // Load famous GitHub contributors
+      const loadFamousContributors = () => {
+        const famousContributors = [
+          {
+            login: 'torvalds',
+            name: 'Linus Torvalds',
+            avatar_url: 'https://avatars.githubusercontent.com/u/1024025',
+            bio: 'Creator of Linux and Git',
+            followers: '195K',
+            repos: '6',
+            html_url: 'https://github.com/torvalds'
+          },
+          {
+            login: 'gvanrossum',
+            name: 'Guido van Rossum',
+            avatar_url: 'https://avatars.githubusercontent.com/u/2894642',
+            bio: 'Creator of Python',
+            followers: '42K',
+            repos: '29',
+            html_url: 'https://github.com/gvanrossum'
+          },
+          {
+            login: 'dhh',
+            name: 'David Heinemeier Hansson',
+            avatar_url: 'https://avatars.githubusercontent.com/u/2741',
+            bio: 'Creator of Ruby on Rails',
+            followers: '36K',
+            repos: '55',
+            html_url: 'https://github.com/dhh'
+          },
+          {
+            login: 'yyx990803',
+            name: 'Evan You',
+            avatar_url: 'https://avatars.githubusercontent.com/u/499550',
+            bio: 'Creator of Vue.js',
+            followers: '83K',
+            repos: '126',
+            html_url: 'https://github.com/yyx990803'
+          }
+        ];
+        
+        // Clear container
+        contributorsContainer.innerHTML = '';
+        
+        // Add contributor cards
+        famousContributors.forEach(contributor => {
+          const contributorCard = document.createElement('div');
+          contributorCard.className = 'contributor-card';
+          
+          contributorCard.innerHTML = `
+            <img class="contributor-avatar" src="${contributor.avatar_url}" alt="${contributor.name}">
+            <div class="contributor-name">${contributor.name}</div>
+            <div class="contributor-username">@${contributor.login}</div>
+            <div class="contributor-bio">${contributor.bio}</div>
+            <div class="contributor-stats">
+              <div class="contributor-stat">
+                <div class="contributor-count">${contributor.followers}</div>
+                <div class="contributor-label">Followers</div>
+              </div>
+              <div class="contributor-stat">
+                <div class="contributor-count">${contributor.repos}</div>
+                <div class="contributor-label">Repos</div>
+              </div>
+            </div>
+            <a href="${contributor.html_url}" class="contributor-link" target="_blank">View Profile</a>
+          `;
+          
+          contributorsContainer.appendChild(contributorCard);
+        });
+      };
+      
+      // Function to save repository as a card
+      function saveRepoCard(repoData) {
+        let savedCards = JSON.parse(localStorage.getItem('githubCards') || '[]');
+        
+        // Check if card already exists
+        const existingCardIndex = savedCards.findIndex(card => card.name === repoData.name);
+        
+        if (existingCardIndex !== -1) {
+          // Update existing card
+          savedCards[existingCardIndex] = repoData;
+          showNotification('Card updated');
+        } else {
+          // Add new card
+          savedCards.push(repoData);
+          showNotification('Card saved');
+        }
+        
+        // Save to localStorage
+        localStorage.setItem('githubCards', JSON.stringify(savedCards));
+      }
+      
+      // Function to show notifications
+      function showNotification(message) {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.style.position = 'fixed';
+        notification.style.bottom = '20px';
+        notification.style.right = '20px';
+        notification.style.backgroundColor = '#0366d6';
+        notification.style.color = 'white';
+        notification.style.padding = '12px 20px';
+        notification.style.borderRadius = '4px';
+        notification.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+        notification.style.zIndex = '1000';
+        notification.style.transition = 'all 0.3s ease';
+        notification.textContent = message;
+        
+        // Add to DOM
+        document.body.appendChild(notification);
+        
+        // Remove after 3 seconds
+        setTimeout(() => {
+          notification.style.opacity = '0';
+          setTimeout(() => {
+            document.body.removeChild(notification);
+          }, 300);
+        }, 3000);
+      }
+      
+      // Load projects and contributors
+      loadPopularProjects();
+      loadFamousContributors();
     });
   </script>
   <% } %>

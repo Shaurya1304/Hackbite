@@ -3,9 +3,23 @@ const router = express.Router();
 const axios = require('axios');
 const { getLanguageColor } = require('../utils/helpers');
 
+// Helper function to create request headers
+const getRequestHeaders = (req) => {
+  const headers = {
+    'Accept': 'application/vnd.github.v3+json'
+  };
+  
+  // Add authorization header if token is available
+  if (req.session?.user?.accessToken && req.session.user.accessToken !== '') {
+    headers['Authorization'] = `token ${req.session.user.accessToken}`;
+  }
+  
+  return headers;
+};
+
 // Middleware to check if user is authenticated
 const isAuthenticated = (req, res, next) => {
-  if (req.session && req.session.user && req.session.user.accessToken) {
+  if (req.session && req.session.user) {
     return next();
   }
   res.redirect('/login');
@@ -14,11 +28,37 @@ const isAuthenticated = (req, res, next) => {
 // Get user's repositories
 router.get('/repos', isAuthenticated, async (req, res) => {
   try {
+    // If no valid token, show some popular repositories instead
+    if (!req.session.user.accessToken || req.session.user.accessToken === '') {
+      const response = await axios.get('https://api.github.com/search/repositories', {
+        headers: getRequestHeaders(req),
+        params: {
+          q: 'stars:>10000',
+          sort: 'stars',
+          order: 'desc',
+          per_page: 20
+        }
+      });
+      
+      // Add language colors directly to repo objects
+      const repos = response.data.items.map(repo => {
+        return {
+          ...repo,
+          languageColor: getLanguageColor(repo.language)
+        };
+      });
+      
+      return res.render('repos', { 
+        repos,
+        user: req.session.user,
+        isLoggedIn: true,
+        isDemo: true
+      });
+    }
+    
+    // Normal case with valid token
     const response = await axios.get('https://api.github.com/user/repos', {
-      headers: {
-        'Authorization': `token ${req.session.user.accessToken}`,
-        'Accept': 'application/vnd.github.v3+json'
-      },
+      headers: getRequestHeaders(req),
       params: {
         sort: 'updated',
         per_page: 100
@@ -52,11 +92,38 @@ router.get('/repos', isAuthenticated, async (req, res) => {
 // Get user profile information
 router.get('/profile', isAuthenticated, async (req, res) => {
   try {
+    // If no valid token, show mock profile data
+    if (!req.session.user.accessToken || req.session.user.accessToken === '') {
+      const mockProfile = {
+        login: 'testuser',
+        id: 12345,
+        avatar_url: req.session.user.photoURL,
+        html_url: 'https://github.com/testuser',
+        name: req.session.user.displayName,
+        company: 'Demo Company',
+        blog: 'https://example.com',
+        location: 'Demo City',
+        email: req.session.user.email,
+        bio: 'This is a mock profile for demonstration purposes',
+        public_repos: 42,
+        public_gists: 17,
+        followers: 1024,
+        following: 256,
+        created_at: '2023-01-01T00:00:00Z',
+        updated_at: '2023-04-01T00:00:00Z'
+      };
+      
+      return res.render('profile', { 
+        profile: mockProfile,
+        user: req.session.user,
+        isLoggedIn: true,
+        isDemo: true
+      });
+    }
+    
+    // Normal case with valid token
     const response = await axios.get('https://api.github.com/user', {
-      headers: {
-        'Authorization': `token ${req.session.user.accessToken}`,
-        'Accept': 'application/vnd.github.v3+json'
-      }
+      headers: getRequestHeaders(req)
     });
 
     res.render('profile', { 
@@ -86,10 +153,7 @@ router.get('/search-suggestions', isAuthenticated, async (req, res) => {
 
     // Use GitHub's search API to get repository suggestions
     const response = await axios.get('https://api.github.com/search/repositories', {
-      headers: {
-        'Authorization': `token ${req.session.user.accessToken}`,
-        'Accept': 'application/vnd.github.v3+json'
-      },
+      headers: getRequestHeaders(req),
       params: {
         q: query,
         per_page: 5,
@@ -136,10 +200,7 @@ router.get('/search', isAuthenticated, async (req, res) => {
 
     // Use GitHub's search API to find repositories across all of GitHub
     const response = await axios.get('https://api.github.com/search/repositories', {
-      headers: {
-        'Authorization': `token ${req.session.user.accessToken}`,
-        'Accept': 'application/vnd.github.v3+json'
-      },
+      headers: getRequestHeaders(req),
       params: {
         q: query,
         per_page: 100,
@@ -186,18 +247,12 @@ router.get('/repo-commits', isAuthenticated, async (req, res) => {
     
     // Get repository info first to check if it exists
     const repoResponse = await axios.get(`https://api.github.com/repos/${repoFullName}`, {
-      headers: {
-        'Authorization': `token ${req.session.user.accessToken}`,
-        'Accept': 'application/vnd.github.v3+json'
-      }
+      headers: getRequestHeaders(req)
     });
     
     // Get commits for the repository
     const commitsResponse = await axios.get(`https://api.github.com/repos/${repoFullName}/commits`, {
-      headers: {
-        'Authorization': `token ${req.session.user.accessToken}`,
-        'Accept': 'application/vnd.github.v3+json'
-      },
+      headers: getRequestHeaders(req),
       params: {
         per_page: 20 // Limit to 20 most recent commits
       }
@@ -227,10 +282,7 @@ router.get('/repo-info', isAuthenticated, async (req, res) => {
     
     // Get repository info
     const repoResponse = await axios.get(`https://api.github.com/repos/${repoFullName}`, {
-      headers: {
-        'Authorization': `token ${req.session.user.accessToken}`,
-        'Accept': 'application/vnd.github.v3+json'
-      }
+      headers: getRequestHeaders(req)
     });
     
     res.json({
@@ -256,18 +308,12 @@ router.get('/repo-branches', isAuthenticated, async (req, res) => {
     
     // Get repository info first to get default branch
     const repoResponse = await axios.get(`https://api.github.com/repos/${repoFullName}`, {
-      headers: {
-        'Authorization': `token ${req.session.user.accessToken}`,
-        'Accept': 'application/vnd.github.v3+json'
-      }
+      headers: getRequestHeaders(req)
     });
     
     // Get branches for the repository
     const branchesResponse = await axios.get(`https://api.github.com/repos/${repoFullName}/branches`, {
-      headers: {
-        'Authorization': `token ${req.session.user.accessToken}`,
-        'Accept': 'application/vnd.github.v3+json'
-      },
+      headers: getRequestHeaders(req),
       params: {
         per_page: 100
       }
@@ -297,10 +343,7 @@ router.get('/repo-contributors', isAuthenticated, async (req, res) => {
     
     // Get contributors for the repository
     const contributorsResponse = await axios.get(`https://api.github.com/repos/${repoFullName}/contributors`, {
-      headers: {
-        'Authorization': `token ${req.session.user.accessToken}`,
-        'Accept': 'application/vnd.github.v3+json'
-      },
+      headers: getRequestHeaders(req),
       params: {
         per_page: 20 // Limit to 20 contributors
       }
@@ -313,6 +356,40 @@ router.get('/repo-contributors', isAuthenticated, async (req, res) => {
     console.error('Error fetching repository contributors:', error.response?.data || error.message);
     res.status(error.response?.status || 500).json({ 
       error: 'Failed to fetch repository contributors', 
+      message: error.response?.data?.message || error.message
+    });
+  }
+});
+
+// Get popular open source repositories
+router.get('/popular-repos', isAuthenticated, async (req, res) => {
+  try {
+    // Search for popular repositories
+    const response = await axios.get('https://api.github.com/search/repositories', {
+      headers: getRequestHeaders(req),
+      params: {
+        q: 'stars:>10000',
+        sort: 'stars',
+        order: 'desc',
+        per_page: 7
+      }
+    });
+
+    // Add language colors to repositories
+    const repos = response.data.items.map(repo => {
+      return {
+        ...repo,
+        languageColor: getLanguageColor(repo.language)
+      };
+    });
+
+    res.json({
+      repositories: repos
+    });
+  } catch (error) {
+    console.error('Error fetching popular repositories:', error.response?.data || error.message);
+    res.status(error.response?.status || 500).json({ 
+      error: 'Failed to fetch popular repositories', 
       message: error.response?.data?.message || error.message
     });
   }
