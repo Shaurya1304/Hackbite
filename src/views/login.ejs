@@ -66,43 +66,57 @@
   </div>
 
   <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 
   <script type="module">
     // Import Firebase modules
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-    import { getAuth, signInWithPopup, GithubAuthProvider } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signInWithPopup, GithubAuthProvider } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    console.log("Initializing Firebase authentication...");
 
     // Your Firebase configuration
     const firebaseConfig = {
-
             apiKey: "AIzaSyA1EiL5ia9y-ipHXrvtuidO5k73jl-fIgM",
             authDomain: "byte-38c3d.firebaseapp.com",
             projectId: "byte-38c3d",
-            storageBucket: "byte-38c3d.firebasestorage.app",
+            storageBucket: "byte-38c3d.appspot.com",
             messagingSenderId: "436753254839",
             appId: "1:436753254839:web:b641d87132a1f82f9a0032",
             measurementId: "G-B9XFGGZ3XQ"
-};
+    };
+
+    console.log("Firebase config:", firebaseConfig);
 
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const provider = new GithubAuthProvider();
+    
+    // Add scopes for GitHub OAuth
+    provider.addScope('user');
+    provider.addScope('repo');
+    
+    console.log("Firebase initialized, auth provider configured");
 
     document.getElementById('githubLogin').addEventListener('click', async () => {
+      console.log("GitHub login button clicked");
       try {
+        console.log("Opening GitHub auth popup...");
         signInWithPopup(auth, provider)
           .then((result) => {
+            console.log("Auth popup succeeded, processing result");
             // This gives you a GitHub Access Token
             const credential = GithubAuthProvider.credentialFromResult(result);
             const token = credential.accessToken;
             
             // The signed-in user info
             const user = result.user;
+            console.log("User authenticated:", user.displayName);
             
             // Send the user data to the server to establish a session
+            console.log("Sending auth data to server...");
             return fetch('/auth/github/callback', {
               method: 'POST',
               headers: {
@@ -114,9 +128,14 @@
               })
             });
           })
-          .then(response => response.json())
+          .then(response => {
+            console.log("Server response:", response.status);
+            return response.json();
+          })
           .then(data => {
+            console.log("Response data:", data);
             if (data.success) {
+              console.log("Login successful, redirecting to:", data.redirectUrl);
               window.location.href = data.redirectUrl;
             } else {
               console.error('Login failed:', data.error);
@@ -127,16 +146,19 @@
             // Handle Errors here
             const errorCode = error.code;
             const errorMessage = error.message;
+            console.error('Auth error code:', errorCode);
+            console.error('Auth error message:', errorMessage);
+            
             // The email of the user's account used
             const email = error.customData?.email;
             // The AuthCredential type that was used
             const credential = GithubAuthProvider.credentialFromError(error);
             
-            console.error('Error during authentication:', error);
+            console.error('Error details:', error);
             alert('Authentication failed: ' + errorMessage);
           });
       } catch (error) {
-        console.error('Error during authentication:', error);
+        console.error('Unexpected error during authentication process:', error);
         alert('Authentication failed: ' + error.message);
       }
     });

@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Explore GitHub - Node App</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+      border-bottom: 1px solid #e1e4e8;
+      margin-bottom: 30px;
+      position: sticky;
+      top: 0;
+      background-color: white;
+      z-index: 100;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .nav-links {
+      display: flex;
+      gap: 10px;
+      background-color: #f6f8fa;
+      padding: 6px;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .nav-links a {
+      color: #24292e;
+      text-decoration: none;
+      font-weight: 500;
+      padding: 8px 12px;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .nav-links a:hover {
+      background-color: #e1e4e8;
+      color: #0366d6;
+    }
+    .nav-links a.active {
+      background-color: #0366d6;
+      color: white;
+    }
+    .nav-links a.active:after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 6px;
+      height: 6px;
+      background-color: #0366d6;
+      border-radius: 50%;
+    }
+    .user-profile {
+      display: flex;
+      align-items: center;
+      background-color: #f6f8fa;
+      padding: 6px 12px;
+      border-radius: 30px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      margin-right: 10px;
+      border: 2px solid #e1e4e8;
+    }
+    .logout-button {
+      background-color: transparent;
+      color: #666;
+      border: 1px solid #ddd;
+      padding: 6px 12px;
+      border-radius: 6px;
+      margin-left: 15px;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .logout-button:hover {
+      background-color: #f2f2f2;
+      color: #d73a49;
+      border-color: #d73a49;
+    }
+    .page-title {
+      margin-bottom: 30px;
+      color: #24292e;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .page-subtitle {
+      font-size: 16px;
+      color: #586069;
+      font-weight: normal;
+    }
+    .repo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+    }
+    .repo-card {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      padding: 25px;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      min-width: 300px;
+      border-left: 4px solid #0366d6;
+    }
+    .repo-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    .repo-name {
+      font-size: 18px;
+      font-weight: bold;
+      color: #0366d6;
+      margin-bottom: 10px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .repo-description {
+      color: #586069;
+      font-size: 14px;
+      margin-bottom: 15px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      min-height: 60px;
+      line-height: 1.5;
+    }
+    .repo-owner {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      padding: 10px;
+      background-color: #f6f8fa;
+      border-radius: 6px;
+      justify-content: space-between;
+    }
+    .owner-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+    .owner-name {
+      font-size: 14px;
+      color: #24292e;
+      font-weight: 500;
+    }
+    .contact-button {
+      font-size: 12px;
+      padding: 3px 8px;
+      background-color: #fff;
+      color: #0366d6;
+      border: 1px solid #0366d6;
+      border-radius: 4px;
+      margin-left: auto;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .contact-button:hover {
+      background-color: #0366d6;
+      color: white;
+    }
+    .repo-language {
+      display: flex;
+      align-items: center;
+      font-size: 12px;
+      color: #586069;
+      margin-bottom: 15px;
+    }
+    .language-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 5px;
+    }
+    .repo-stats {
+      display: flex;
+      gap: 15px;
+      font-size: 13px;
+      color: #586069;
+      margin-bottom: 15px;
+    }
+    .repo-stat {
+      display: flex;
+      align-items: center;
+    }
+    .repo-stat svg {
+      margin-right: 5px;
+      width: 14px;
+      height: 14px;
+    }
+    .repo-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 15px;
+    }
+    .repo-tag {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 12px;
+      background-color: #f1f8ff;
+      color: #0366d6;
+    }
+    .repo-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: auto;
+    }
+    .repo-link, .repo-preview {
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-size: 14px;
+      transition: background-color 0.3s;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+    }
+    .repo-link {
+      background-color: #0366d6;
+      color: white;
+    }
+    .repo-link:hover {
+      background-color: #0256b9;
+    }
+    .repo-preview {
+      background-color: #6f42c1;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    .repo-preview:hover {
+      background-color: #5a32a3;
+    }
+    .load-more {
+      display: flex;
+      justify-content: center;
+      margin-top: 40px;
+      margin-bottom: 40px;
+    }
+    .load-more-button {
+      padding: 12px 24px;
+      background-color: #0366d6;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .load-more-button:hover {
+      background-color: #0256b9;
+    }
+    .load-more-button:disabled {
+      background-color: #6c757d;
+      cursor: not-allowed;
+    }
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+      margin-left: 10px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .empty-state {
+      text-align: center;
+      padding: 60px 0;
+    }
+    .empty-state-icon {
+      font-size: 60px;
+      margin-bottom: 20px;
+      color: #d1d5da;
+    }
+    .empty-state-title {
+      font-size: 24px;
+      color: #24292e;
+      margin-bottom: 10px;
+    }
+    .empty-state-message {
+      font-size: 16px;
+      color: #586069;
+      margin-bottom: 30px;
+    }
+    .category-tabs {
+      display: flex;
+      overflow-x: auto;
+      margin-bottom: 30px;
+      border-bottom: 1px solid #e1e4e8;
+      padding-bottom: 10px;
+    }
+    .category-tab {
+      padding: 8px 16px;
+      margin-right: 10px;
+      border-radius: 4px;
+      background-color: #f6f8fa;
+      color: #24292e;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+      border: 1px solid #e1e4e8;
+    }
+    .category-tab:hover {
+      background-color: #e1e4e8;
+    }
+    .category-tab.active {
+      background-color: #0366d6;
+      color: white;
+      border-color: #0366d6;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h2>Node App</h2>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/github/repos">Repositories</a>
+        <a href="/github/explore" class="active">Explore</a>
+        <a href="/github/profile">Profile</a>
+        <a href="/github/cards">My Cards</a>
+      </div>
+      <% if (isLoggedIn) { %>
+        <div class="user-profile">
+          <a href="/github/profile" style="display: flex; align-items: center; text-decoration: none; color: inherit;">
+            <img src="<%= user.photoURL %>" alt="Profile" class="user-avatar">
+            <span><%= user.displayName %></span>
+          </a>
+          <a href="/auth/logout" class="logout-button">Logout</a>
+        </div>
+      <% } %>
+    </header>
+
+    <main>
+      <div class="page-title">
+        <h1>Explore GitHub Repositories</h1>
+        <span class="page-subtitle">
+          Showing <%= repos.length %> of <%= totalCount.toLocaleString() %> repositories
+        </span>
+      </div>
+      
+      <div class="category-tabs">
+        <div class="category-tab active" data-category="stars">Most Stars</div>
+        <div class="category-tab" data-category="forks">Most Forks</div>
+        <div class="category-tab" data-category="trending">Trending</div>
+        <div class="category-tab" data-category="updated">Recently Updated</div>
+        <div class="category-tab" data-category="created">Newly Created</div>
+      </div>
+      
+      <% if (repos && repos.length > 0) { %>
+        <div id="repoGrid" class="repo-grid">
+          <% repos.forEach(repo => { %>
+            <div class="repo-card">
+              <div class="repo-name">
+                <a href="<%= repo.html_url %>" target="_blank" style="text-decoration: none; color: inherit;">
+                  <%= (repo.full_name && repo.full_name.split('/')[1]) || repo.name %>
+                </a>
+              </div>
+              <div class="repo-description">
+                <%= repo.description || 'No description available' %>
+              </div>
+              <% if (repo.owner) { %>
+                <div class="repo-owner">
+                  <div style="display: flex; align-items: center;">
+                    <img src="<%= repo.owner.avatar_url %>" alt="<%= repo.owner.login %>" class="owner-avatar">
+                    <span class="owner-name"><%= repo.owner.login %></span>
+                  </div>
+                  <button class="contact-button">Contact</button>
+                </div>
+              <% } %>
+              <% if (repo.language) { %>
+                <div class="repo-language">
+                  <span class="language-color" style="background-color:#333"></span>
+                  <span><%= repo.language %></span>
+                </div>
+              <% } %>
+              <div class="repo-stats">
+                <div class="repo-stat">
+                  <svg viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true" fill="#586069">
+                    <path fill-rule="evenodd" d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"></path>
+                  </svg>
+                  <%= repo.stargazers_count.toLocaleString() %>
+                </div>
+                <div class="repo-stat">
+                  <svg viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true" fill="#586069">
+                    <path fill-rule="evenodd" d="M5 3.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm0 2.122a2.25 2.25 0 10-1.5 0v.878A2.25 2.25 0 005.75 8.5h1.5v2.128a2.251 2.251 0 101.5 0V8.5h1.5a2.25 2.25 0 002.25-2.25v-.878a2.25 2.25 0 10-1.5 0v.878a.75.75 0 01-.75.75h-4.5A.75.75 0 015 6.25v-.878zm3.75 7.378a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm3-8.75a.75.75 0 100-1.5.75.75 0 000 1.5z"></path>
+                  </svg>
+                  <%= repo.forks_count.toLocaleString() %>
+                </div>
+                <div class="repo-stat">
+                  <svg viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true" fill="#586069">
+                    <path fill-rule="evenodd" d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8zm9 3a1 1 0 11-2 0 1 1 0 012 0zm-.25-6.25a.75.75 0 00-1.5 0v3.5a.75.75 0 001.5 0v-3.5z"></path>
+                  </svg>
+                  <%= repo.open_issues_count.toLocaleString() %>
+                </div>
+              </div>
+              <div class="repo-tags">
+                <% if (repo.open_issues_count > 10) { %>
+                  <span class="repo-tag">Active Issues</span>
+                <% } %>
+                <% if (repo.stargazers_count > 1000) { %>
+                  <span class="repo-tag">Popular</span>
+                <% } %>
+                <% if (repo.forks_count > 100) { %>
+                  <span class="repo-tag">Highly Forked</span>
+                <% } %>
+              </div>
+              <div class="repo-actions">
+                <a href="<%= repo.html_url %>" class="repo-link" target="_blank">View Repo</a>
+                <button class="repo-preview" data-repo='<%= JSON.stringify({
+                  id: Date.now() + repo.id,
+                  name: repo.full_name || repo.name,
+                  description: repo.description,
+                  url: repo.html_url,
+                  language: repo.language,
+                  languageColor: repo.languageColor,
+                  stars: repo.stargazers_count,
+                  forks: repo.forks_count,
+                  issues: repo.open_issues_count,
+                  owner: repo.owner ? {
+                    login: repo.owner.login,
+                    avatar_url: repo.owner.avatar_url,
+                    html_url: repo.owner.html_url
+                  } : null
+                }) %>'>Preview</button>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+        
+        <div class="load-more">
+          <button id="loadMoreBtn" class="load-more-button" data-page="<%= currentPage %>">
+            Load More Repositories
+            <span id="loadingSpinner" class="loading-spinner" style="display: none;"></span>
+          </button>
+        </div>
+      <% } else { %>
+        <div class="empty-state">
+          <div class="empty-state-icon">🔍</div>
+          <h2 class="empty-state-title">No repositories found</h2>
+          <p class="empty-state-message">We couldn't find any repositories matching your criteria.</p>
+          <a href="/github/explore" class="load-more-button">Reset Filters</a>
+        </div>
+      <% } %>
+    </main>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const loadMoreBtn = document.getElementById('loadMoreBtn');
+      const loadingSpinner = document.getElementById('loadingSpinner');
+      const repoGrid = document.getElementById('repoGrid');
+      const categoryTabs = document.querySelectorAll('.category-tab');
+      
+      let currentCategory = 'stars';
+      
+      // Load more repositories
+      if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', async function() {
+          const nextPage = parseInt(this.getAttribute('data-page')) + 1;
+          
+          // Show loading spinner
+          loadingSpinner.style.display = 'inline-block';
+          loadMoreBtn.disabled = true;
+          
+          try {
+            const response = await fetch(`/github/explore-more?page=${nextPage}&category=${currentCategory}`);
+            const data = await response.json();
+            
+            if (data.repositories && data.repositories.length > 0) {
+              // Add new repositories to the grid
+              data.repositories.forEach(repo => {
+                const repoCard = document.createElement('div');
+                repoCard.className = 'repo-card';
+                
+                // Create owner HTML if owner exists
+                const ownerHtml = repo.owner ? `
+                  <div class="repo-owner">
+                    <div style="display: flex; align-items: center;">
+                      <img src="${repo.owner.avatar_url}" alt="${repo.owner.login}" class="owner-avatar">
+                      <span class="owner-name">${repo.owner.login}</span>
+                    </div>
+                    <button class="contact-button">Contact</button>
+                  </div>
+                ` : '';
+                
+                // Create language HTML if language exists
+                const languageHtml = repo.language ? `
+                  <div class="repo-language">
+                    <span class="language-color" style="background-color: ${repo.languageColor || '#333'}"></span>
+                    <span>${repo.language}</span>
+                  </div>
+                ` : '';
+                
+                // Create tags based on repo attributes
+                let tagsHtml = `<div class="repo-tags">`;
+                if (repo.open_issues_count > 10) {
+                  tagsHtml += `<span class="repo-tag">Active Issues</span>`;
+                }
+                if (repo.stargazers_count > 1000) {
+                  tagsHtml += `<span class="repo-tag">Popular</span>`;
+                }
+                if (repo.forks_count > 100) {
+                  tagsHtml += `<span class="repo-tag">Highly Forked</span>`;
+                }
+                tagsHtml += `</div>`;
+                
+                // Create repo card HTML
+                repoCard.innerHTML = `
+                  <div class="repo-name">
+                    <a href="${repo.html_url}" target="_blank" style="text-decoration: none; color: inherit;">
+                      ${(repo.full_name && repo.full_name.split('/')[1]) || repo.name}
+                    </a>
+                  </div>
+                  <div class="repo-description">
+                    ${repo.description || 'No description available'}
+                  </div>
+                  ${ownerHtml}
+                  ${languageHtml}
+                  <div class="repo-stats">
+                    <div class="repo-stat">
+                      <svg viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true" fill="#586069">
+                        <path fill-rule="evenodd" d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"></path>
+                      </svg>
+                      ${repo.stargazers_count.toLocaleString()}
+                    </div>
+                    <div class="repo-stat">
+                      <svg viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true" fill="#586069">
+                        <path fill-rule="evenodd" d="M5 3.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm0 2.122a2.25 2.25 0 10-1.5 0v.878A2.25 2.25 0 005.75 8.5h1.5v2.128a2.251 2.251 0 101.5 0V8.5h1.5a2.25 2.25 0 002.25-2.25v-.878a2.25 2.25 0 10-1.5 0v.878a.75.75 0 01-.75.75h-4.5A.75.75 0 015 6.25v-.878zm3.75 7.378a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm3-8.75a.75.75 0 100-1.5.75.75 0 000 1.5z"></path>
+                      </svg>
+                      ${repo.forks_count.toLocaleString()}
+                    </div>
+                    <div class="repo-stat">
+                      <svg viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true" fill="#586069">
+                        <path fill-rule="evenodd" d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8zm9 3a1 1 0 11-2 0 1 1 0 012 0zm-.25-6.25a.75.75 0 00-1.5 0v3.5a.75.75 0 001.5 0v-3.5z"></path>
+                      </svg>
+                      ${repo.open_issues_count.toLocaleString()}
+                    </div>
+                  </div>
+                  ${tagsHtml}
+                  <div class="repo-actions">
+                    <a href="${repo.html_url}" class="repo-link" target="_blank">View Repo</a>
+                    <button class="repo-preview" data-repo='${JSON.stringify({
+                      id: Date.now() + repo.id,
+                      name: repo.full_name || repo.name,
+                      description: repo.description,
+                      url: repo.html_url,
+                      language: repo.language,
+                      languageColor: repo.languageColor,
+                      stars: repo.stargazers_count,
+                      forks: repo.forks_count,
+                      issues: repo.open_issues_count,
+                      owner: repo.owner ? {
+                        login: repo.owner.login,
+                        avatar_url: repo.owner.avatar_url,
+                        html_url: repo.owner.html_url
+                      } : null
+                    })}'>Preview</button>
+                  </div>
+                `;
+                
+                repoGrid.appendChild(repoCard);
+              });
+              
+              // Update the page number for the next load
+              loadMoreBtn.setAttribute('data-page', data.currentPage);
+              
+              // Hide the load more button if we've reached the end
+              if (repoGrid.children.length >= data.totalCount || data.currentPage * 10 >= data.totalCount) {
+                loadMoreBtn.style.display = 'none';
+              }
+              
+              // Add event listeners to new preview buttons
+              attachSaveButtonListeners();
+            } else {
+              // No more repositories to load
+              loadMoreBtn.style.display = 'none';
+            }
+          } catch (error) {
+            console.error('Error loading more repositories:', error);
+            showNotification('Error loading more repositories. Please try again.');
+          } finally {
+            // Hide loading spinner and enable button
+            loadingSpinner.style.display = 'none';
+            loadMoreBtn.disabled = false;
+          }
+        });
+      }
+      
+      // Category tabs
+      categoryTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+          const category = this.getAttribute('data-category');
+          
+          if (category === currentCategory) return;
+          
+          // Update active tab
+          categoryTabs.forEach(t => t.classList.remove('active'));
+          this.classList.add('active');
+          
+          // Update current category
+          currentCategory = category;
+          
+          // Redirect to page with new category
+          window.location.href = `/github/explore?category=${category}`;
+        });
+      });
+      
+      // Function to attach event listeners to preview buttons
+      function attachSaveButtonListeners() {
+        document.querySelectorAll('.repo-preview').forEach(button => {
+          if (!button.hasAttribute('data-listener')) {
+            button.setAttribute('data-listener', 'true');
+            button.addEventListener('click', function() {
+              const repoData = JSON.parse(this.getAttribute('data-repo'));
+              showRepoPreview(repoData);
+            });
+          }
+        });
+      }
+      
+      // Function to show repository preview
+      function showRepoPreview(repoData) {
+        // Create modal element
+        const modal = document.createElement('div');
+        modal.className = 'preview-modal';
+        modal.style.position = 'fixed';
+        modal.style.top = '0';
+        modal.style.left = '0';
+        modal.style.width = '100%';
+        modal.style.height = '100%';
+        modal.style.backgroundColor = 'rgba(0,0,0,0.7)';
+        modal.style.zIndex = '1000';
+        modal.style.display = 'flex';
+        modal.style.justifyContent = 'center';
+        modal.style.alignItems = 'center';
+        
+        // Create modal content
+        const modalContent = document.createElement('div');
+        modalContent.style.backgroundColor = 'white';
+        modalContent.style.borderRadius = '8px';
+        modalContent.style.padding = '30px';
+        modalContent.style.maxWidth = '600px';
+        modalContent.style.width = '80%';
+        modalContent.style.maxHeight = '80vh';
+        modalContent.style.overflowY = 'auto';
+        modalContent.style.position = 'relative';
+        modalContent.style.boxShadow = '0 5px 20px rgba(0,0,0,0.2)';
+        
+        // Create close button
+        const closeButton = document.createElement('button');
+        closeButton.innerHTML = '&times;';
+        closeButton.style.position = 'absolute';
+        closeButton.style.top = '15px';
+        closeButton.style.right = '15px';
+        closeButton.style.backgroundColor = 'transparent';
+        closeButton.style.border = 'none';
+        closeButton.style.fontSize = '24px';
+        closeButton.style.cursor = 'pointer';
+        closeButton.style.color = '#586069';
+        closeButton.addEventListener('click', () => {
+          document.body.removeChild(modal);
+        });
+        
+        // Repository name and URL
+        const repoName = document.createElement('h2');
+        repoName.style.marginTop = '0';
+        repoName.style.color = '#0366d6';
+        repoName.innerHTML = `<a href="${repoData.url}" target="_blank" style="text-decoration: none; color: inherit;">${repoData.name}</a>`;
+        
+        // Repository description
+        const repoDesc = document.createElement('p');
+        repoDesc.style.marginBottom = '20px';
+        repoDesc.style.color = '#586069';
+        repoDesc.style.lineHeight = '1.5';
+        repoDesc.textContent = repoData.description || 'No description available';
+        
+        // Repository details - in points format
+        const repoDetails = document.createElement('div');
+        repoDetails.style.marginBottom = '25px';
+        
+        // Create a list of details
+        const detailsList = document.createElement('ul');
+        detailsList.style.paddingLeft = '20px';
+        detailsList.style.margin = '0';
+        
+        // Add details as list items
+        const details = [
+          `<strong>Language:</strong> ${repoData.language || 'Not specified'}`,
+          `<strong>Stars:</strong> ${repoData.stars.toLocaleString()}`,
+          `<strong>Forks:</strong> ${repoData.forks.toLocaleString()}`,
+          `<strong>Open Issues:</strong> ${repoData.issues.toLocaleString()}`,
+          repoData.owner ? `<strong>Owner:</strong> <a href="${repoData.owner.html_url}" target="_blank" style="color: #0366d6; text-decoration: none;">${repoData.owner.login}</a>` : ''
+        ];
+        
+        details.forEach(detail => {
+          if (detail) {
+            const li = document.createElement('li');
+            li.style.margin = '8px 0';
+            li.style.color = '#24292e';
+            li.innerHTML = detail;
+            detailsList.appendChild(li);
+          }
+        });
+        
+        repoDetails.appendChild(detailsList);
+        
+        // View on GitHub button
+        const viewButton = document.createElement('a');
+        viewButton.href = repoData.url;
+        viewButton.target = '_blank';
+        viewButton.textContent = 'View on GitHub';
+        viewButton.style.display = 'inline-block';
+        viewButton.style.padding = '10px 20px';
+        viewButton.style.backgroundColor = '#0366d6';
+        viewButton.style.color = 'white';
+        viewButton.style.textDecoration = 'none';
+        viewButton.style.borderRadius = '4px';
+        viewButton.style.marginTop = '15px';
+        
+        // Append all elements to modal content
+        modalContent.appendChild(closeButton);
+        modalContent.appendChild(repoName);
+        modalContent.appendChild(repoDesc);
+        modalContent.appendChild(repoDetails);
+        modalContent.appendChild(viewButton);
+        
+        // Append modal content to modal
+        modal.appendChild(modalContent);
+        
+        // Append modal to body
+        document.body.appendChild(modal);
+        
+        // Add event listener to close modal when clicking outside
+        modal.addEventListener('click', function(event) {
+          if (event.target === modal) {
+            document.body.removeChild(modal);
+          }
+        });
+      }
+      
+      // Function to show notifications
+      function showNotification(message) {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.style.position = 'fixed';
+        notification.style.bottom = '20px';
+        notification.style.right = '20px';
+        notification.style.backgroundColor = '#0366d6';
+        notification.style.color = 'white';
+        notification.style.padding = '12px 20px';
+        notification.style.borderRadius = '4px';
+        notification.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+        notification.style.zIndex = '1000';
+        notification.style.transition = 'all 0.3s ease';
+        notification.textContent = message;
+        
+        // Add to DOM
+        document.body.appendChild(notification);
+        
+        // Remove after 3 seconds
+        setTimeout(() => {
+          notification.style.opacity = '0';
+          setTimeout(() => {
+            document.body.removeChild(notification);
+          }, 300);
+        }, 3000);
+      }
+      
+      // Initialize preview button listeners
+      attachSaveButtonListeners();
+    });
+  </script>
+</body>
+</html> 

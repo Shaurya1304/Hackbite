@@ -56,9 +56,18 @@
     .nav-links a {
       color: #0366d6;
       text-decoration: none;
+      font-weight: 500;
+      padding: 6px 10px;
+      border-radius: 4px;
+      transition: background-color 0.2s, color 0.2s;
     }
     .nav-links a:hover {
-      text-decoration: underline;
+      text-decoration: none;
+      background-color: #f6f8fa;
+    }
+    .nav-links a.active {
+      background-color: #0366d6;
+      color: white;
     }
     .page-title {
       margin-bottom: 30px;
@@ -398,11 +407,13 @@
 <body>
   <div class="container">
     <header class="header">
-      <h2>My GitHub Cards</h2>
+      <h2>Node App</h2>
       <div class="nav-links">
         <a href="/">Home</a>
         <a href="/github/repos">Repositories</a>
+        <a href="/github/explore">Explore</a>
         <a href="/github/profile">Profile</a>
+        <a href="/github/cards" class="active">My Cards</a>
       </div>
       <% if (isLoggedIn) { %>
         <div class="user-profile">

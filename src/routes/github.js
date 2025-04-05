@@ -395,4 +395,145 @@ router.get('/popular-repos', isAuthenticated, async (req, res) => {
   }
 });
 
+// Explore page - display collections of repositories
+router.get('/explore', isAuthenticated, async (req, res) => {
+  try {
+    // Initial page of repositories (first 10)
+    const page = parseInt(req.query.page) || 1;
+    const perPage = 10;
+    const category = req.query.category || 'stars';
+    
+    // Determine search query based on category
+    let searchQuery = 'stars:>5000';
+    let sort = 'stars';
+    let order = 'desc';
+    
+    switch (category) {
+      case 'forks':
+        searchQuery = 'forks:>1000';
+        sort = 'forks';
+        break;
+      case 'trending':
+        searchQuery = 'created:>2023-01-01';
+        sort = 'stars';
+        break;
+      case 'updated':
+        searchQuery = 'pushed:>2023-06-01';
+        sort = 'updated';
+        break;
+      case 'created':
+        searchQuery = '';
+        sort = 'created';
+        break;
+      default: // stars
+        break;
+    }
+    
+    // Use GitHub's search API to find interesting repositories with different criteria
+    const response = await axios.get('https://api.github.com/search/repositories', {
+      headers: getRequestHeaders(req),
+      params: {
+        q: searchQuery,
+        sort: sort,
+        order: order,
+        page: page,
+        per_page: perPage
+      }
+    });
+
+    // Add language colors to repositories
+    const repos = response.data.items.map(repo => {
+      return {
+        ...repo,
+        languageColor: getLanguageColor(repo.language)
+      };
+    });
+
+    res.render('explore', { 
+      repos,
+      user: req.session.user,
+      isLoggedIn: true,
+      currentPage: page,
+      totalCount: Math.min(response.data.total_count, 1000), // GitHub API limits to 1000 results
+      perPage: perPage,
+      category: category
+    });
+  } catch (error) {
+    console.error('Error fetching explore repositories:', error.response?.data || error.message);
+    res.status(500).render('error', { 
+      message: 'Failed to fetch explore repositories', 
+      error: error.response?.data?.message || error.message,
+      isLoggedIn: true,
+      user: req.session.user
+    });
+  }
+});
+
+// API endpoint to load more explore repositories (for AJAX loading)
+router.get('/explore-more', isAuthenticated, async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const perPage = parseInt(req.query.perPage) || 10;
+    const category = req.query.category || 'stars';
+    
+    // Determine search query based on category
+    let searchQuery = 'stars:>5000';
+    let sort = 'stars';
+    let order = 'desc';
+    
+    switch (category) {
+      case 'forks':
+        searchQuery = 'forks:>1000';
+        sort = 'forks';
+        break;
+      case 'trending':
+        searchQuery = 'created:>2023-01-01';
+        sort = 'stars';
+        break;
+      case 'updated':
+        searchQuery = 'pushed:>2023-06-01';
+        sort = 'updated';
+        break;
+      case 'created':
+        searchQuery = '';
+        sort = 'created';
+        break;
+      default: // stars
+        break;
+    }
+    
+    // Use GitHub's search API to find repositories
+    const response = await axios.get('https://api.github.com/search/repositories', {
+      headers: getRequestHeaders(req),
+      params: {
+        q: searchQuery,
+        sort: sort,
+        order: order,
+        page: page,
+        per_page: perPage
+      }
+    });
+
+    // Add language colors to repositories
+    const repos = response.data.items.map(repo => {
+      return {
+        ...repo,
+        languageColor: getLanguageColor(repo.language)
+      };
+    });
+
+    res.json({
+      repositories: repos,
+      totalCount: Math.min(response.data.total_count, 1000),
+      currentPage: page
+    });
+  } catch (error) {
+    console.error('Error fetching more explore repositories:', error.response?.data || error.message);
+    res.status(error.response?.status || 500).json({ 
+      error: 'Failed to fetch more repositories', 
+      message: error.response?.data?.message || error.message
+    });
+  }
+});
+
 module.exports = router; 
