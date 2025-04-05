@@ -232,24 +232,28 @@
     }
     .projects-container {
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       gap: 20px;
-      max-height: 600px;
-      overflow-y: auto;
-      padding-right: 15px;
-      border-radius: 8px;
+      overflow-x: auto;
+      padding-bottom: 15px;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
     }
     .project-card {
       background-color: white;
       border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      padding: 20px;
-      transition: transform 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      padding: 25px;
+      transition: all 0.3s ease;
       display: flex;
       flex-direction: column;
+      min-width: 320px;
+      max-width: 320px;
+      border-left: 4px solid #0366d6;
     }
     .project-card:hover {
       transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     }
     .project-header {
       display: flex;
@@ -258,10 +262,14 @@
       margin-bottom: 15px;
     }
     .project-name {
-      font-size: 20px;
+      font-size: 18px;
       font-weight: bold;
       color: #0366d6;
       margin: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 200px;
     }
     .project-stars {
       background-color: #f6f8fa;
@@ -271,6 +279,7 @@
       color: #586069;
       display: flex;
       align-items: center;
+      white-space: nowrap;
     }
     .project-stars svg {
       margin-right: 5px;
@@ -281,6 +290,45 @@
       color: #586069;
       margin-bottom: 15px;
       line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      min-height: 60px;
+    }
+    .project-owner {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      padding: 10px;
+      background-color: #f6f8fa;
+      border-radius: 6px;
+    }
+    .owner-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+    .owner-name {
+      font-size: 14px;
+      color: #24292e;
+      font-weight: 500;
+    }
+    .contact-button {
+      font-size: 12px;
+      padding: 3px 8px;
+      background-color: #fff;
+      color: #0366d6;
+      border: 1px solid #0366d6;
+      border-radius: 4px;
+      margin-left: auto;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .contact-button:hover {
+      background-color: #0366d6;
+      color: white;
     }
     .project-stats {
       display: flex;
@@ -290,7 +338,7 @@
     .project-stat {
       display: flex;
       align-items: center;
-      font-size: 14px;
+      font-size: 13px;
       color: #586069;
     }
     .project-stat svg {
@@ -313,6 +361,19 @@
       font-size: 14px;
       color: #586069;
     }
+    .project-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 15px;
+    }
+    .project-tag {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 12px;
+      background-color: #f1f8ff;
+      color: #0366d6;
+    }
     .project-links {
       display: flex;
       gap: 10px;
@@ -326,6 +387,8 @@
       border-radius: 4px;
       font-size: 14px;
       transition: background-color 0.3s;
+      flex: 1;
+      text-align: center;
     }
     .project-link:hover {
       background-color: #0256b9;
@@ -339,9 +402,84 @@
       font-size: 14px;
       cursor: pointer;
       transition: background-color 0.3s;
+      flex: 1;
+      white-space: nowrap;
     }
     .project-save:hover {
       background-color: #2c974b;
+    }
+    
+    /* Preview button styles */
+    .project-preview {
+      padding: 8px 16px;
+      background-color: #6f42c1;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      flex: 1;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .project-preview:hover {
+      background-color: #5a32a3;
+      transform: translateY(-2px);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+    }
+    .project-preview:before {
+      content: "👁️";
+      margin-right: 6px;
+      font-size: 14px;
+    }
+    
+    /* Scroll controls */
+    .scroll-controls {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 15px;
+      gap: 10px;
+    }
+    .scroll-button {
+      background-color: #f6f8fa;
+      border: 1px solid #e1e4e8;
+      color: #24292e;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .scroll-button:hover {
+      background-color: #0366d6;
+      color: white;
+      border-color: #0366d6;
+    }
+    .scroll-button svg {
+      width: 20px;
+      height: 20px;
+    }
+    
+    /* Custom scrollbar for the horizontal scroll */
+    .projects-container::-webkit-scrollbar {
+      height: 8px;
+    }
+    .projects-container::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+    .projects-container::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 10px;
+    }
+    .projects-container::-webkit-scrollbar-thumb:hover {
+      background: #a8a8a8;
     }
     
     /* Contributors section */
@@ -357,50 +495,91 @@
     .contributor-card {
       background-color: white;
       border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      padding: 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      padding: 25px;
       transition: transform 0.3s ease;
       width: calc(25% - 20px);
-      min-width: 200px;
+      min-width: 280px;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
+      border-top: 4px solid #0366d6;
     }
     .contributor-card:hover {
       transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     }
     .contributor-avatar {
-      width: 80px;
-      height: 80px;
+      width: 90px;
+      height: 90px;
       border-radius: 50%;
       margin-bottom: 15px;
+      border: 3px solid #f6f8fa;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
     .contributor-name {
-      font-size: 18px;
+      font-size: 20px;
       font-weight: bold;
-      color: #0366d6;
+      color: #24292e;
       margin-bottom: 5px;
     }
     .contributor-username {
       font-size: 14px;
       color: #586069;
-      margin-bottom: 10px;
+      margin-bottom: 15px;
     }
     .contributor-bio {
       font-size: 14px;
       color: #24292e;
       margin-bottom: 15px;
       line-height: 1.4;
-      flex-grow: 1;
+      min-height: 40px;
+    }
+    .contributor-contributions {
+      width: 100%;
+      text-align: left;
+      margin-bottom: 15px;
+      background-color: #f6f8fa;
+      padding: 12px;
+      border-radius: 6px;
+    }
+    .contributor-contributions h4 {
+      margin: 0 0 8px 0;
+      font-size: 14px;
+      color: #24292e;
+    }
+    .contributor-contributions ul {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 13px;
+      color: #586069;
+    }
+    .contributor-contributions li {
+      margin-bottom: 4px;
+    }
+    .contributor-expertise {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 15px;
+      justify-content: center;
+    }
+    .expertise-tag {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 12px;
+      background-color: #e6f3ff;
+      color: #0366d6;
     }
     .contributor-stats {
       display: flex;
-      gap: 15px;
+      gap: 25px;
       font-size: 12px;
       color: #586069;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
       justify-content: center;
+      width: 100%;
     }
     .contributor-stat {
       display: flex;
@@ -416,32 +595,17 @@
       font-size: 12px;
     }
     .contributor-link {
-      padding: 6px 12px;
+      padding: 8px 16px;
       background-color: #0366d6;
       color: white;
       text-decoration: none;
       border-radius: 4px;
       font-size: 14px;
       transition: background-color 0.3s;
+      width: 100%;
     }
     .contributor-link:hover {
       background-color: #0256b9;
-    }
-    
-    /* Custom scrollbar */
-    .projects-container::-webkit-scrollbar {
-      width: 8px;
-    }
-    .projects-container::-webkit-scrollbar-track {
-      background: #f1f1f1;
-      border-radius: 10px;
-    }
-    .projects-container::-webkit-scrollbar-thumb {
-      background: #c1c1c1;
-      border-radius: 10px;
-    }
-    .projects-container::-webkit-scrollbar-thumb:hover {
-      background: #a8a8a8;
     }
     
     @media (max-width: 768px) {
@@ -453,6 +617,307 @@
       .contributor-card {
         width: 100%;
       }
+    }
+    /* Modal styles */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(3px);
+    }
+
+    .modal-container {
+      background-color: white;
+      border-radius: 8px;
+      width: 80%;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+      animation: modalFadeIn 0.3s ease;
+    }
+
+    @keyframes modalFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      border-bottom: 1px solid #e1e4e8;
+    }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: bold;
+      color: #24292e;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 22px;
+      color: #586069;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .modal-close:hover {
+      color: #24292e;
+    }
+
+    .modal-body {
+      padding: 20px;
+    }
+
+    .modal-section {
+      margin-bottom: 20px;
+    }
+
+    .modal-section-title {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #24292e;
+      border-left: 3px solid #0366d6;
+      padding-left: 10px;
+    }
+
+    .modal-description {
+      line-height: 1.6;
+      color: #24292e;
+      margin-bottom: 15px;
+    }
+
+    .modal-info {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .modal-info-item {
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      color: #586069;
+      background-color: #f6f8fa;
+      padding: 8px 12px;
+      border-radius: 6px;
+    }
+
+    .modal-info-item svg {
+      margin-right: 8px;
+      width: 16px;
+      height: 16px;
+    }
+
+    .modal-stat-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .modal-stat {
+      background-color: #f6f8fa;
+      border-radius: 6px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .modal-stat-value {
+      font-size: 20px;
+      font-weight: bold;
+      color: #24292e;
+      margin-bottom: 5px;
+    }
+
+    .modal-stat-label {
+      font-size: 14px;
+      color: #586069;
+    }
+
+    .modal-commits, .modal-branches, .modal-contributors {
+      margin-bottom: 20px;
+    }
+
+    .modal-item-list {
+      background-color: #f6f8fa;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .modal-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 15px;
+      border-bottom: 1px solid #e1e4e8;
+    }
+
+    .modal-item:last-child {
+      border-bottom: none;
+    }
+
+    .modal-item-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+
+    .modal-item-title {
+      font-weight: 500;
+      color: #0366d6;
+      margin-right: 10px;
+    }
+
+    .modal-item-info {
+      font-size: 13px;
+      color: #586069;
+      margin-left: auto;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 15px 20px;
+      border-top: 1px solid #e1e4e8;
+    }
+
+    .modal-action-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .modal-button {
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .modal-primary-button {
+      background-color: #0366d6;
+      color: white;
+      border: none;
+    }
+
+    .modal-primary-button:hover {
+      background-color: #0256b9;
+    }
+
+    .modal-secondary-button {
+      background-color: white;
+      color: #24292e;
+      border: 1px solid #e1e4e8;
+    }
+
+    .modal-secondary-button:hover {
+      background-color: #f6f8fa;
+    }
+
+    .modal-loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+      color: #586069;
+    }
+
+    .modal-loading svg {
+      animation: spin 1s linear infinite;
+      margin-right: 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Modal styles for contributor connections */
+    .modal-section-description {
+      font-size: 14px;
+      color: #586069;
+      margin: 0 0 12px 0;
+    }
+    
+    .modal-contributor-info {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+    
+    .modal-item-subtitle {
+      font-size: 12px;
+      color: #586069;
+      margin-top: 2px;
+    }
+    
+    .modal-contributor-actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .modal-contact-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      font-size: 12px;
+      padding: 4px 8px;
+      background-color: #f6f8fa;
+      color: #0366d6;
+      border: 1px solid #e1e4e8;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    
+    .modal-contact-button:hover {
+      background-color: #0366d6;
+      color: white;
+      border-color: #0366d6;
+    }
+
+    .modal-connect-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background-color: #0366d6;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .modal-connect-button:hover {
+      background-color: #0256b9;
     }
   </style>
 </head>
@@ -505,6 +970,18 @@
           
           <h2 style="margin-top: 40px; margin-bottom: 20px; text-align: left;">Popular Open Source Projects</h2>
           <div class="opensource-projects">
+            <div class="scroll-controls">
+              <button id="scrollLeft" class="scroll-button">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor">
+                  <path fill-rule="evenodd" d="M9.78 4.22a.75.75 0 010 1.06L7.06 8l2.72 2.72a.75.75 0 11-1.06 1.06L5.47 8.53a.75.75 0 010-1.06l3.25-3.25a.75.75 0 011.06 0z" clip-rule="evenodd"></path>
+                </svg>
+              </button>
+              <button id="scrollRight" class="scroll-button">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor">
+                  <path fill-rule="evenodd" d="M6.22 4.22a.75.75 0 011.06 0l3.25 3.25a.75.75 0 010 1.06l-3.25 3.25a.75.75 0 01-1.06-1.06L8.94 8 6.22 5.28a.75.75 0 010-1.06z" clip-rule="evenodd"></path>
+                </svg>
+              </button>
+            </div>
             <div id="projectsContainer" class="projects-container">
               <!-- Projects will be loaded via JavaScript -->
             </div>
@@ -585,6 +1062,121 @@
   </div>
 
   <% if (isLoggedIn) { %>
+  <!-- Project Details Modal -->
+  <div id="projectModal" class="modal-backdrop">
+    <div class="modal-container">
+      <div class="modal-header">
+        <div class="modal-title" id="modalTitle">Repository Details</div>
+        <button class="modal-close" id="modalClose">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="modalLoading" class="modal-loading">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="2" x2="12" y2="6"></line>
+            <line x1="12" y1="18" x2="12" y2="22"></line>
+            <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
+            <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
+            <line x1="2" y1="12" x2="6" y2="12"></line>
+            <line x1="18" y1="12" x2="22" y2="12"></line>
+            <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
+            <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
+          </svg>
+          Loading repository details...
+        </div>
+        <div id="modalContent" style="display: none;">
+          <div class="modal-section">
+            <div class="modal-section-title">Description</div>
+            <div class="modal-description" id="modalDescription"></div>
+          </div>
+          
+          <div class="modal-section">
+            <div class="modal-section-title">Repository Information</div>
+            <div class="modal-info">
+              <div class="modal-info-item" id="modalLanguage">
+                <svg viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true" fill="currentColor">
+                  <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8z"></path>
+                </svg>
+                <span>Language</span>
+              </div>
+              <div class="modal-info-item">
+                <svg viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true" fill="currentColor">
+                  <path fill-rule="evenodd" d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"></path>
+                </svg>
+                <span id="modalStars">0 stars</span>
+              </div>
+              <div class="modal-info-item">
+                <svg viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true" fill="currentColor">
+                  <path fill-rule="evenodd" d="M5 3.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm0 2.122a2.25 2.25 0 10-1.5 0v.878A2.25 2.25 0 005.75 8.5h1.5v2.128a2.251 2.251 0 101.5 0V8.5h1.5a2.25 2.25 0 002.25-2.25v-.878a2.25 2.25 0 10-1.5 0v.878a.75.75 0 01-.75.75h-4.5A.75.75 0 015 6.25v-.878zm3.75 7.378a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm3-8.75a.75.75 0 100-1.5.75.75 0 000 1.5z"></path>
+                </svg>
+                <span id="modalForks">0 forks</span>
+              </div>
+              <div class="modal-info-item">
+                <svg viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true" fill="currentColor">
+                  <path fill-rule="evenodd" d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8zm9 3a1 1 0 11-2 0 1 1 0 012 0zm-.25-6.25a.75.75 0 00-1.5 0v3.5a.75.75 0 001.5 0v-3.5z"></path>
+                </svg>
+                <span id="modalIssues">0 open issues</span>
+              </div>
+              <div class="modal-info-item">
+                <svg viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true" fill="currentColor">
+                  <path fill-rule="evenodd" d="M1.643 3.143L.427 1.927A.25.25 0 000 2.104V5.75c0 .138.112.25.25.25h3.646a.25.25 0 00.177-.427L2.715 4.215a6.5 6.5 0 11-1.18 4.458.75.75 0 10-1.493.154 8.001 8.001 0 101.6-5.684zM7.75 4a.75.75 0 01.75.75v2.992l2.028.812a.75.75 0 01-.557 1.392l-2.5-1A.75.75 0 017 8.25v-3.5A.75.75 0 017.75 4z"></path>
+                </svg>
+                <span id="modalUpdated">Last updated</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="modal-section">
+            <div class="modal-section-title">Statistics</div>
+            <div class="modal-stat-group">
+              <div class="modal-stat">
+                <div class="modal-stat-value" id="modalCommitsCount">0</div>
+                <div class="modal-stat-label">Commits</div>
+              </div>
+              <div class="modal-stat">
+                <div class="modal-stat-value" id="modalBranchesCount">0</div>
+                <div class="modal-stat-label">Branches</div>
+              </div>
+              <div class="modal-stat">
+                <div class="modal-stat-value" id="modalContributorsCount">0</div>
+                <div class="modal-stat-label">Contributors</div>
+              </div>
+              <div class="modal-stat">
+                <div class="modal-stat-value" id="modalReleasesCount">0</div>
+                <div class="modal-stat-label">Releases</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="modal-section modal-commits">
+            <div class="modal-section-title">Recent Commits</div>
+            <div class="modal-item-list" id="modalCommitsList">
+              <!-- Commits will be loaded here -->
+            </div>
+          </div>
+          
+          <div class="modal-section modal-contributors">
+            <div class="modal-section-title">Top Contributors</div>
+            <p class="modal-section-description">Connect with the developers behind this project:</p>
+            <div class="modal-item-list" id="modalContributorsList">
+              <!-- Contributors will be loaded here -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <div class="modal-action-group">
+          <button class="modal-button modal-secondary-button" id="modalClose2">Close</button>
+          <a class="modal-button modal-primary-button" id="modalViewRepo" href="#" target="_blank">View on GitHub</a>
+        </div>
+        <button class="modal-button modal-connect-button" id="modalConnectAll">
+          <svg viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true" fill="currentColor">
+            <path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path>
+          </svg>
+          Connect with Contributors
+        </button>
+      </div>
+    </div>
+  </div>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const searchInput = document.getElementById('searchInput');
@@ -592,6 +1184,8 @@
       const searchForm = document.getElementById('searchForm');
       const projectsContainer = document.getElementById('projectsContainer');
       const contributorsContainer = document.getElementById('contributorsContainer');
+      const scrollLeftBtn = document.getElementById('scrollLeft');
+      const scrollRightBtn = document.getElementById('scrollRight');
       
       let timeout = null;
       
@@ -791,6 +1385,29 @@
             const projectCard = document.createElement('div');
             projectCard.className = 'project-card';
             
+            // Define contribution tags based on repository attributes
+            const tags = [];
+            if (project.open_issues_count > 100) tags.push('High Activity');
+            if (project.stargazers_count > 50000) tags.push('Popular');
+            if (project.language) tags.push(project.language);
+            if (project.topics && project.topics.length > 0) {
+              project.topics.slice(0, 2).forEach(topic => tags.push(topic));
+            } else if (project.description) {
+              // Extract potential topics from description if not provided
+              const descriptionWords = project.description.toLowerCase().split(/\s+/);
+              const potentialTags = ['beginner-friendly', 'documentation', 'hacktoberfest', 'first-timers', 'good-first-issue'];
+              potentialTags.forEach(tag => {
+                if (descriptionWords.includes(tag.toLowerCase()) && !tags.includes(tag)) {
+                  tags.push(tag);
+                }
+              });
+            }
+            
+            // Owner information (fallback to owner login if name not available)
+            const ownerName = project.owner?.login || 'Unknown';
+            const ownerAvatar = project.owner?.avatar_url || 'https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png';
+            const ownerUrl = project.owner?.html_url || '#';
+            
             projectCard.innerHTML = `
               <div class="project-header">
                 <h3 class="project-name">${project.name || project.full_name}</h3>
@@ -802,6 +1419,17 @@
                 </div>
               </div>
               <div class="project-description">${project.description || 'No description available'}</div>
+              
+              <div class="project-owner">
+                <img src="${ownerAvatar}" alt="${ownerName}" class="owner-avatar">
+                <span class="owner-name">${ownerName}</span>
+                <a href="${ownerUrl}" target="_blank" class="contact-button">Contact</a>
+              </div>
+              
+              <div class="project-tags">
+                ${tags.map(tag => `<span class="project-tag">${tag}</span>`).join('')}
+              </div>
+              
               <div class="project-stats">
                 <div class="project-stat">
                   <svg viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true">
@@ -823,15 +1451,16 @@
               </div>
               ` : ''}
               <div class="project-links">
-                <a href="${project.html_url}" class="project-link" target="_blank">View on GitHub</a>
-                <button class="project-save" 
+                <a href="${project.html_url}" class="project-link" target="_blank">View Repo</a>
+                <button class="project-preview" 
                   data-repo="${project.name || project.full_name}" 
                   data-stars="${project.stargazers_count || project.stars}" 
                   data-forks="${project.forks_count || project.forks}" 
+                  data-issues="${project.open_issues_count || project.open_issues}"
                   data-language="${project.language || ''}" 
                   data-color="${project.languageColor || '#000000'}" 
                   data-url="${project.html_url}" 
-                  data-description="${(project.description || 'No description available').replace(/"/g, '&quot;')}">Save as Card</button>
+                  data-description="${(project.description || 'No description available').replace(/"/g, '&quot;')}">Preview</button>
               </div>
             `;
             
@@ -861,6 +1490,15 @@
         }
       };
       
+      // Handle scroll buttons
+      scrollLeftBtn.addEventListener('click', () => {
+        projectsContainer.scrollBy({ left: -400, behavior: 'smooth' });
+      });
+      
+      scrollRightBtn.addEventListener('click', () => {
+        projectsContainer.scrollBy({ left: 400, behavior: 'smooth' });
+      });
+      
       // Load famous GitHub contributors
       const loadFamousContributors = () => {
         const famousContributors = [
@@ -871,7 +1509,9 @@
             bio: 'Creator of Linux and Git',
             followers: '195K',
             repos: '6',
-            html_url: 'https://github.com/torvalds'
+            html_url: 'https://github.com/torvalds',
+            contributions: ['Linux Kernel', 'Git', 'Subsurface'],
+            contribution_types: ['Core Development', 'System Design']
           },
           {
             login: 'gvanrossum',
@@ -880,7 +1520,9 @@
             bio: 'Creator of Python',
             followers: '42K',
             repos: '29',
-            html_url: 'https://github.com/gvanrossum'
+            html_url: 'https://github.com/gvanrossum',
+            contributions: ['Python', 'CPython', 'PEP Standards'],
+            contribution_types: ['Language Design', 'Documentation']
           },
           {
             login: 'dhh',
@@ -889,7 +1531,9 @@
             bio: 'Creator of Ruby on Rails',
             followers: '36K',
             repos: '55',
-            html_url: 'https://github.com/dhh'
+            html_url: 'https://github.com/dhh',
+            contributions: ['Ruby on Rails', 'Basecamp', 'Turbo'],
+            contribution_types: ['Framework Design', 'Full-Stack Development']
           },
           {
             login: 'yyx990803',
@@ -898,7 +1542,9 @@
             bio: 'Creator of Vue.js',
             followers: '83K',
             repos: '126',
-            html_url: 'https://github.com/yyx990803'
+            html_url: 'https://github.com/yyx990803',
+            contributions: ['Vue.js', 'Vite', 'Vuex'],
+            contribution_types: ['Frontend Frameworks', 'Build Tools']
           }
         ];
         
@@ -915,6 +1561,18 @@
             <div class="contributor-name">${contributor.name}</div>
             <div class="contributor-username">@${contributor.login}</div>
             <div class="contributor-bio">${contributor.bio}</div>
+            
+            <div class="contributor-contributions">
+              <h4>Major Contributions:</h4>
+              <ul>
+                ${contributor.contributions.map(contrib => `<li>${contrib}</li>`).join('')}
+              </ul>
+            </div>
+            
+            <div class="contributor-expertise">
+              ${contributor.contribution_types.map(type => `<span class="expertise-tag">${type}</span>`).join('')}
+            </div>
+            
             <div class="contributor-stats">
               <div class="contributor-stat">
                 <div class="contributor-count">${contributor.followers}</div>
@@ -984,6 +1642,327 @@
       // Load projects and contributors
       loadPopularProjects();
       loadFamousContributors();
+      
+      // Modal elements
+      const projectModal = document.getElementById('projectModal');
+      const modalClose = document.getElementById('modalClose');
+      const modalClose2 = document.getElementById('modalClose2');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalDescription = document.getElementById('modalDescription');
+      const modalLanguage = document.getElementById('modalLanguage');
+      const modalStars = document.getElementById('modalStars');
+      const modalForks = document.getElementById('modalForks');
+      const modalIssues = document.getElementById('modalIssues');
+      const modalUpdated = document.getElementById('modalUpdated');
+      const modalCommitsCount = document.getElementById('modalCommitsCount');
+      const modalBranchesCount = document.getElementById('modalBranchesCount');
+      const modalContributorsCount = document.getElementById('modalContributorsCount');
+      const modalReleasesCount = document.getElementById('modalReleasesCount');
+      const modalCommitsList = document.getElementById('modalCommitsList');
+      const modalContributorsList = document.getElementById('modalContributorsList');
+      const modalViewRepo = document.getElementById('modalViewRepo');
+      const modalLoading = document.getElementById('modalLoading');
+      const modalContent = document.getElementById('modalContent');
+      
+      // Function to open modal with repository details
+      const openRepoModal = async (repoFullName, repoData) => {
+        // Reset modal state
+        modalTitle.textContent = repoFullName;
+        modalDescription.textContent = repoData.description || 'No description available';
+        modalLanguage.innerHTML = `
+          <svg viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true" fill="currentColor">
+            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8z"></path>
+          </svg>
+          <span>${repoData.language || 'Not specified'}</span>
+        `;
+        if (repoData.language && repoData.color) {
+          modalLanguage.querySelector('svg').style.fill = repoData.color;
+        }
+        modalStars.textContent = `${parseInt(repoData.stars).toLocaleString()} stars`;
+        modalForks.textContent = `${parseInt(repoData.forks).toLocaleString()} forks`;
+        modalIssues.textContent = `${parseInt(repoData.issues || 0).toLocaleString()} open issues`;
+        modalUpdated.textContent = 'Loading...';
+        modalCommitsCount.textContent = '...';
+        modalBranchesCount.textContent = '...';
+        modalContributorsCount.textContent = '...';
+        modalReleasesCount.textContent = '0';
+        modalCommitsList.innerHTML = '<div class="modal-loading">Loading commits...</div>';
+        modalContributorsList.innerHTML = '<div class="modal-loading">Loading contributors...</div>';
+        modalViewRepo.href = repoData.url;
+        
+        // Show modal
+        modalLoading.style.display = 'flex';
+        modalContent.style.display = 'none';
+        projectModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Prevent scrolling behind modal
+        
+        try {
+          // Fetch repository info
+          const repoInfoResponse = await fetch(`/github/repo-info?repo=${encodeURIComponent(repoFullName)}`);
+          if (!repoInfoResponse.ok) throw new Error('Failed to fetch repository info');
+          const repoInfo = await repoInfoResponse.json();
+          
+          if (repoInfo.repository) {
+            const repo = repoInfo.repository;
+            modalUpdated.textContent = `Updated ${formatDate(repo.updated_at)}`;
+            modalReleasesCount.textContent = repo.releases_count || '0';
+            
+            // Check if we need to update any values from the API data
+            if (repo.stargazers_count) modalStars.textContent = `${repo.stargazers_count.toLocaleString()} stars`;
+            if (repo.forks_count) modalForks.textContent = `${repo.forks_count.toLocaleString()} forks`;
+            if (repo.open_issues_count) modalIssues.textContent = `${repo.open_issues_count.toLocaleString()} open issues`;
+          }
+          
+          // Fetch commits
+          const commitsResponse = await fetch(`/github/repo-commits?repo=${encodeURIComponent(repoFullName)}`);
+          if (!commitsResponse.ok) throw new Error('Failed to fetch commits');
+          const commitsData = await commitsResponse.json();
+          
+          if (commitsData.commits && commitsData.commits.length > 0) {
+            modalCommitsCount.textContent = commitsData.commits.length;
+            modalCommitsList.innerHTML = '';
+            
+            // Display up to 5 most recent commits
+            commitsData.commits.slice(0, 5).forEach(commit => {
+              const commitItem = document.createElement('div');
+              commitItem.className = 'modal-item';
+              
+              const authorAvatar = commit.author && commit.author.avatar_url 
+                ? `<img src="${commit.author.avatar_url}" class="modal-item-avatar" alt="Author">`
+                : '';
+              
+              commitItem.innerHTML = `
+                ${authorAvatar}
+                <div class="modal-item-title">${commit.commit.message.split('\n')[0]}</div>
+                <div class="modal-item-info">${formatDate(commit.commit.author.date)}</div>
+              `;
+              
+              modalCommitsList.appendChild(commitItem);
+            });
+          } else {
+            modalCommitsList.innerHTML = '<div style="padding: 15px; text-align: center; color: #586069;">No commits found</div>';
+          }
+          
+          // Fetch branches
+          const branchesResponse = await fetch(`/github/repo-branches?repo=${encodeURIComponent(repoFullName)}`);
+          if (!branchesResponse.ok) throw new Error('Failed to fetch branches');
+          const branchesData = await branchesResponse.json();
+          
+          if (branchesData.branches) {
+            modalBranchesCount.textContent = branchesData.branches.length;
+          }
+          
+          // Fetch contributors
+          const contributorsResponse = await fetch(`/github/repo-contributors?repo=${encodeURIComponent(repoFullName)}`);
+          if (!contributorsResponse.ok) throw new Error('Failed to fetch contributors');
+          const contributorsData = await contributorsResponse.json();
+          
+          if (contributorsData.contributors && contributorsData.contributors.length > 0) {
+            modalContributorsCount.textContent = contributorsData.contributors.length;
+            modalContributorsList.innerHTML = '';
+            
+            // Display up to 5 top contributors
+            contributorsData.contributors.slice(0, 5).forEach(contributor => {
+              const contributorItem = document.createElement('div');
+              contributorItem.className = 'modal-item';
+              
+              contributorItem.innerHTML = `
+                <img src="${contributor.avatar_url}" class="modal-item-avatar" alt="${contributor.login}">
+                <div class="modal-contributor-info">
+                  <div class="modal-item-title">${contributor.login}</div>
+                  <div class="modal-item-subtitle">${contributor.contributions} contributions</div>
+                </div>
+                <div class="modal-contributor-actions">
+                  <a href="https://github.com/${contributor.login}" target="_blank" class="modal-contact-button">
+                    <svg viewBox="0 0 16 16" version="1.1" width="14" height="14" aria-hidden="true" fill="currentColor">
+                      <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+                    </svg>
+                    Profile
+                  </a>
+                  <button class="modal-contact-button" onclick="window.open('mailto:?subject=About your contribution to ${encodeURIComponent(repoFullName)}', '_blank')">
+                    <svg viewBox="0 0 16 16" version="1.1" width="14" height="14" aria-hidden="true" fill="currentColor">
+                      <path d="M1.75 2h12.5c.966 0 1.75.784 1.75 1.75v8.5A1.75 1.75 0 0114.25 14H1.75A1.75 1.75 0 010 12.25v-8.5C0 2.784.784 2 1.75 2zM1.5 12.251c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V5.809L8.38 9.397a.75.75 0 01-.76 0L1.5 5.809v6.442zm13-8.181v-.32a.25.25 0 00-.25-.25H1.75a.25.25 0 00-.25.25v.32L8 7.88l6.5-3.81z"></path>
+                    </svg>
+                    Contact
+                  </button>
+                </div>
+              `;
+              
+              modalContributorsList.appendChild(contributorItem);
+            });
+          } else {
+            modalContributorsList.innerHTML = '<div style="padding: 15px; text-align: center; color: #586069;">No contributors found</div>';
+          }
+          
+        } catch (error) {
+          console.error('Error fetching repository details:', error);
+          // Handle errors but still show basic info
+        } finally {
+          // Hide loading and show content
+          modalLoading.style.display = 'none';
+          modalContent.style.display = 'block';
+        }
+      };
+      
+      // Format date to relative time (e.g., "2 days ago")
+      function formatDate(dateString) {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffTime = Math.abs(now - date);
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays === 0) {
+          const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+          if (diffHours === 0) {
+            const diffMinutes = Math.floor(diffTime / (1000 * 60));
+            return `${diffMinutes} minute${diffMinutes !== 1 ? 's' : ''} ago`;
+          }
+          return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+        } else if (diffDays < 30) {
+          return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
+        } else if (diffDays < 365) {
+          const diffMonths = Math.floor(diffDays / 30);
+          return `${diffMonths} month${diffMonths !== 1 ? 's' : ''} ago`;
+        } else {
+          const diffYears = Math.floor(diffDays / 365);
+          return `${diffYears} year${diffYears !== 1 ? 's' : ''} ago`;
+        }
+      }
+      
+      // Close modal when clicking close button or outside the modal
+      modalClose.addEventListener('click', () => {
+        projectModal.style.display = 'none';
+        document.body.style.overflow = ''; // Restore scrolling
+      });
+      
+      modalClose2.addEventListener('click', () => {
+        projectModal.style.display = 'none';
+        document.body.style.overflow = ''; // Restore scrolling
+      });
+      
+      // Close modal when clicking outside the modal content
+      projectModal.addEventListener('click', (event) => {
+        if (event.target === projectModal) {
+          projectModal.style.display = 'none';
+          document.body.style.overflow = ''; // Restore scrolling
+        }
+      });
+      
+      // Add event listeners to preview buttons once projects are loaded
+      projectsContainer.addEventListener('click', (event) => {
+        // Check if the clicked element is a preview button or its ancestor is
+        const previewButton = event.target.closest('.project-preview');
+        if (previewButton) {
+          const repoData = {
+            name: previewButton.getAttribute('data-repo'),
+            stars: previewButton.getAttribute('data-stars'),
+            forks: previewButton.getAttribute('data-forks'),
+            issues: previewButton.getAttribute('data-issues'),
+            language: previewButton.getAttribute('data-language'),
+            color: previewButton.getAttribute('data-color'),
+            url: previewButton.getAttribute('data-url'),
+            description: previewButton.getAttribute('data-description')
+          };
+          
+          openRepoModal(repoData.name, repoData);
+        }
+      });
+      
+      // Handle "Connect with Contributors" button
+      const modalConnectAll = document.getElementById('modalConnectAll');
+      modalConnectAll.addEventListener('click', () => {
+        // Get all contributors in the modal
+        const contributors = document.querySelectorAll('#modalContributorsList .modal-item');
+        const contributorLogins = Array.from(contributors).map(item => {
+          const titleEl = item.querySelector('.modal-item-title');
+          return titleEl ? titleEl.textContent : '';
+        }).filter(login => login); // Filter out empty logins
+        
+        const repoName = modalTitle.textContent;
+        
+        // Create and show connection options dialog
+        const dialogHTML = `
+          <div class="contributor-connection-dialog">
+            <h3>Connect with Contributors</h3>
+            <p>Here are ways to connect with contributors of <strong>${repoName}</strong>:</p>
+            <ul>
+              <li>Visit each contributor's GitHub profile</li>
+              <li>Open issues on the repository to start discussions</li>
+              <li>Join the project's community channels (Discord, Slack, etc.)</li>
+              <li>Participate in discussions in the repository's issues</li>
+            </ul>
+            <p><strong>Contributors:</strong> ${contributorLogins.join(', ')}</p>
+            <div class="contributor-connection-actions">
+              <a href="${modalViewRepo.href}/issues/new" target="_blank" class="modal-connect-button">Open New Issue</a>
+              <a href="${modalViewRepo.href}/discussions" target="_blank" class="modal-connect-button">Join Discussions</a>
+              <button class="modal-secondary-button" id="connectionDialogClose">Close</button>
+            </div>
+          </div>
+        `;
+        
+        // Create and show dialog
+        const dialogOverlay = document.createElement('div');
+        dialogOverlay.className = 'modal-backdrop';
+        dialogOverlay.style.display = 'flex';
+        dialogOverlay.style.zIndex = '1100'; // Higher than the modal
+        dialogOverlay.innerHTML = dialogHTML;
+        document.body.appendChild(dialogOverlay);
+        
+        // Add CSS for the contributor connection dialog
+        const connectionDialogStyle = document.createElement('style');
+        connectionDialogStyle.textContent = `
+          .contributor-connection-dialog {
+            background-color: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            padding: 25px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            animation: modalFadeIn 0.3s ease;
+          }
+          .contributor-connection-dialog h3 {
+            margin-top: 0;
+            font-size: 20px;
+            color: #24292e;
+            margin-bottom: 15px;
+          }
+          .contributor-connection-dialog p {
+            margin-bottom: 15px;
+            line-height: 1.5;
+            color: #24292e;
+          }
+          .contributor-connection-dialog ul {
+            margin-bottom: 20px;
+            padding-left: 20px;
+          }
+          .contributor-connection-dialog li {
+            margin-bottom: 8px;
+            color: #24292e;
+          }
+          .contributor-connection-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+            justify-content: flex-end;
+          }
+        `;
+        document.head.appendChild(connectionDialogStyle);
+        
+        // Close dialog when clicking close button
+        const connectionDialogClose = document.getElementById('connectionDialogClose');
+        connectionDialogClose.addEventListener('click', () => {
+          document.body.removeChild(dialogOverlay);
+          document.head.removeChild(connectionDialogStyle);
+        });
+        
+        // Close dialog when clicking outside
+        dialogOverlay.addEventListener('click', (event) => {
+          if (event.target === dialogOverlay) {
+            document.body.removeChild(dialogOverlay);
+            document.head.removeChild(connectionDialogStyle);
+          }
+        });
+      });
     });
   </script>
   <% } %>
