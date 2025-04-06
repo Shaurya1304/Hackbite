@@ -335,28 +335,28 @@ router.get('/repo-branches', isAuthenticated, async (req, res) => {
 // Get repository contributors
 router.get('/repo-contributors', isAuthenticated, async (req, res) => {
   try {
-    const repoFullName = req.query.repo;
+    const { repo } = req.query;
     
-    if (!repoFullName) {
+    if (!repo) {
       return res.status(400).json({ error: 'Repository name is required' });
     }
     
-    // Get contributors for the repository
-    const contributorsResponse = await axios.get(`https://api.github.com/repos/${repoFullName}/contributors`, {
+    // Use axios instead of Octokit
+    const [owner, repoName] = repo.split('/');
+    
+    const contributorsResponse = await axios.get(`https://api.github.com/repos/${owner}/${repoName}/contributors`, {
       headers: getRequestHeaders(req),
       params: {
-        per_page: 20 // Limit to 20 contributors
+        per_page: 10
       }
     });
     
-    res.json({
-      contributors: contributorsResponse.data
-    });
+    res.json(contributorsResponse.data);
   } catch (error) {
     console.error('Error fetching repository contributors:', error.response?.data || error.message);
     res.status(error.response?.status || 500).json({ 
       error: 'Failed to fetch repository contributors', 
-      message: error.response?.data?.message || error.message
+      message: error.response?.data?.message || error.message 
     });
   }
 });
@@ -531,6 +531,32 @@ router.get('/explore-more', isAuthenticated, async (req, res) => {
     console.error('Error fetching more explore repositories:', error.response?.data || error.message);
     res.status(error.response?.status || 500).json({ 
       error: 'Failed to fetch more repositories', 
+      message: error.response?.data?.message || error.message
+    });
+  }
+});
+
+// Get repository details
+router.get('/repo-details', isAuthenticated, async (req, res) => {
+  try {
+    const { repo } = req.query;
+    
+    if (!repo) {
+      return res.status(400).json({ error: 'Repository name is required' });
+    }
+    
+    // Use axios instead of Octokit
+    const [owner, repoName] = repo.split('/');
+    
+    const repoResponse = await axios.get(`https://api.github.com/repos/${owner}/${repoName}`, {
+      headers: getRequestHeaders(req)
+    });
+    
+    res.json(repoResponse.data);
+  } catch (error) {
+    console.error('Error fetching repository details:', error.response?.data || error.message);
+    res.status(error.response?.status || 500).json({ 
+      error: 'Failed to fetch repository details', 
       message: error.response?.data?.message || error.message
     });
   }

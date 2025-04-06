@@ -672,9 +672,9 @@
         modalContent.style.backgroundColor = 'white';
         modalContent.style.borderRadius = '8px';
         modalContent.style.padding = '30px';
-        modalContent.style.maxWidth = '600px';
-        modalContent.style.width = '80%';
-        modalContent.style.maxHeight = '80vh';
+        modalContent.style.maxWidth = '700px';
+        modalContent.style.width = '90%';
+        modalContent.style.maxHeight = '85vh';
         modalContent.style.overflowY = 'auto';
         modalContent.style.position = 'relative';
         modalContent.style.boxShadow = '0 5px 20px rgba(0,0,0,0.2)';
@@ -707,35 +707,96 @@
         repoDesc.style.lineHeight = '1.5';
         repoDesc.textContent = repoData.description || 'No description available';
         
-        // Repository details - in points format
-        const repoDetails = document.createElement('div');
-        repoDetails.style.marginBottom = '25px';
+        // Status section
+        const statusSection = document.createElement('div');
+        statusSection.style.marginBottom = '25px';
+        statusSection.style.border = '1px solid #e1e4e8';
+        statusSection.style.borderRadius = '6px';
+        statusSection.style.padding = '15px';
+        statusSection.style.backgroundColor = '#f6f8fa';
         
-        // Create a list of details
-        const detailsList = document.createElement('ul');
-        detailsList.style.paddingLeft = '20px';
-        detailsList.style.margin = '0';
+        const statusTitle = document.createElement('h3');
+        statusTitle.style.margin = '0 0 10px 0';
+        statusTitle.style.fontSize = '16px';
+        statusTitle.style.color = '#24292e';
+        statusTitle.innerHTML = 'Repository Status';
         
-        // Add details as list items
-        const details = [
-          `<strong>Language:</strong> ${repoData.language || 'Not specified'}`,
-          `<strong>Stars:</strong> ${repoData.stars.toLocaleString()}`,
-          `<strong>Forks:</strong> ${repoData.forks.toLocaleString()}`,
-          `<strong>Open Issues:</strong> ${repoData.issues.toLocaleString()}`,
-          repoData.owner ? `<strong>Owner:</strong> <a href="${repoData.owner.html_url}" target="_blank" style="color: #0366d6; text-decoration: none;">${repoData.owner.login}</a>` : ''
+        const statusGrid = document.createElement('div');
+        statusGrid.style.display = 'grid';
+        statusGrid.style.gridTemplateColumns = 'repeat(2, 1fr)';
+        statusGrid.style.gap = '10px';
+        
+        // Determine activity level based on stats
+        let activityLevel = 'Low';
+        if (repoData.stars > 1000 || repoData.forks > 100) {
+          activityLevel = 'High';
+        } else if (repoData.stars > 100 || repoData.forks > 10) {
+          activityLevel = 'Medium';
+        }
+        
+        // Create status items
+        const statusItems = [
+          { label: 'Activity Level', value: activityLevel, color: activityLevel === 'High' ? '#28a745' : (activityLevel === 'Medium' ? '#f6bc00' : '#cfcfcf') },
+          { label: 'Stars', value: repoData.stars.toLocaleString() },
+          { label: 'Forks', value: repoData.forks.toLocaleString() },
+          { label: 'Open Issues', value: repoData.issues.toLocaleString() },
+          { label: 'Language', value: repoData.language || 'Not specified' },
+          { label: 'Last Updated', value: 'Fetching...' }
         ];
         
-        details.forEach(detail => {
-          if (detail) {
-            const li = document.createElement('li');
-            li.style.margin = '8px 0';
-            li.style.color = '#24292e';
-            li.innerHTML = detail;
-            detailsList.appendChild(li);
-          }
+        statusItems.forEach(item => {
+          const statusItem = document.createElement('div');
+          
+          const label = document.createElement('div');
+          label.style.fontSize = '12px';
+          label.style.color = '#586069';
+          label.textContent = item.label;
+          
+          const value = document.createElement('div');
+          value.style.fontSize = '16px';
+          value.style.fontWeight = '600';
+          value.style.color = item.color || '#24292e';
+          value.textContent = item.value;
+          
+          statusItem.appendChild(label);
+          statusItem.appendChild(value);
+          statusGrid.appendChild(statusItem);
         });
         
-        repoDetails.appendChild(detailsList);
+        statusSection.appendChild(statusTitle);
+        statusSection.appendChild(statusGrid);
+        
+        // Contributors section
+        const contributorsSection = document.createElement('div');
+        contributorsSection.style.marginBottom = '25px';
+        
+        const contributorsTitle = document.createElement('h3');
+        contributorsTitle.style.margin = '0 0 15px 0';
+        contributorsTitle.style.fontSize = '16px';
+        contributorsTitle.style.color = '#24292e';
+        contributorsTitle.textContent = 'Top Contributors';
+        
+        const contributorsDescription = document.createElement('p');
+        contributorsDescription.style.fontSize = '14px';
+        contributorsDescription.style.color = '#586069';
+        contributorsDescription.style.marginBottom = '15px';
+        contributorsDescription.textContent = 'Connect with developers who contribute to this repository:';
+        
+        const contributorsList = document.createElement('div');
+        contributorsList.style.display = 'flex';
+        contributorsList.style.flexDirection = 'column';
+        contributorsList.style.gap = '10px';
+        contributorsList.innerHTML = '<div style="text-align: center; padding: 20px;">Loading contributors...</div>';
+        
+        contributorsSection.appendChild(contributorsTitle);
+        contributorsSection.appendChild(contributorsDescription);
+        contributorsSection.appendChild(contributorsList);
+        
+        // Repository actions
+        const actionsSection = document.createElement('div');
+        actionsSection.style.marginTop = '25px';
+        actionsSection.style.display = 'flex';
+        actionsSection.style.justifyContent = 'space-between';
         
         // View on GitHub button
         const viewButton = document.createElement('a');
@@ -748,14 +809,29 @@
         viewButton.style.color = 'white';
         viewButton.style.textDecoration = 'none';
         viewButton.style.borderRadius = '4px';
-        viewButton.style.marginTop = '15px';
         
-        // Append all elements to modal content
+        // Connect with contributors button
+        const connectButton = document.createElement('button');
+        connectButton.textContent = 'Connect with Contributors';
+        connectButton.style.padding = '10px 20px';
+        connectButton.style.backgroundColor = '#28a745';
+        connectButton.style.color = 'white';
+        connectButton.style.border = 'none';
+        connectButton.style.borderRadius = '4px';
+        connectButton.style.cursor = 'pointer';
+        connectButton.disabled = true; // Initially disabled
+        connectButton.style.opacity = '0.7';
+        
+        actionsSection.appendChild(viewButton);
+        actionsSection.appendChild(connectButton);
+        
+        // Append all sections to modal content
         modalContent.appendChild(closeButton);
         modalContent.appendChild(repoName);
         modalContent.appendChild(repoDesc);
-        modalContent.appendChild(repoDetails);
-        modalContent.appendChild(viewButton);
+        modalContent.appendChild(statusSection);
+        modalContent.appendChild(contributorsSection);
+        modalContent.appendChild(actionsSection);
         
         // Append modal content to modal
         modal.appendChild(modalContent);
@@ -769,6 +845,138 @@
             document.body.removeChild(modal);
           }
         });
+        
+        // Fetch additional repository details
+        fetchRepoDetails(repoData.url.split('/').slice(-2).join('/'), statusGrid, contributorsList, connectButton);
+      }
+      
+      // Function to fetch additional repository details
+      async function fetchRepoDetails(repoFullName, statusGrid, contributorsList, connectButton) {
+        try {
+          // Fetch repository details
+          const repoResponse = await fetch(`/github/repo-details?repo=${repoFullName}`);
+          const repoData = await repoResponse.json();
+          
+          if (repoData && repoData.updated_at) {
+            // Update last updated field
+            const lastUpdatedItem = statusGrid.children[5];
+            if (lastUpdatedItem) {
+              const valueElement = lastUpdatedItem.querySelector('div:last-child');
+              if (valueElement) {
+                const updatedDate = new Date(repoData.updated_at);
+                valueElement.textContent = updatedDate.toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric'
+                });
+              }
+            }
+          }
+          
+          // Fetch contributors
+          const contributorsResponse = await fetch(`/github/repo-contributors?repo=${repoFullName}`);
+          const contributorsData = await contributorsResponse.json();
+          
+          if (contributorsData && contributorsData.length > 0) {
+            // Clear loading message
+            contributorsList.innerHTML = '';
+            
+            // Display up to 5 contributors
+            const topContributors = contributorsData.slice(0, 5);
+            
+            topContributors.forEach(contributor => {
+              const contributorItem = document.createElement('div');
+              contributorItem.style.display = 'flex';
+              contributorItem.style.alignItems = 'center';
+              contributorItem.style.justifyContent = 'space-between';
+              contributorItem.style.padding = '10px';
+              contributorItem.style.backgroundColor = '#f6f8fa';
+              contributorItem.style.borderRadius = '6px';
+              
+              const contributorInfo = document.createElement('div');
+              contributorInfo.style.display = 'flex';
+              contributorInfo.style.alignItems = 'center';
+              contributorInfo.style.gap = '10px';
+              
+              const avatar = document.createElement('img');
+              avatar.src = contributor.avatar_url;
+              avatar.alt = contributor.login;
+              avatar.style.width = '40px';
+              avatar.style.height = '40px';
+              avatar.style.borderRadius = '50%';
+              
+              const userInfo = document.createElement('div');
+              
+              const username = document.createElement('div');
+              username.style.fontWeight = '600';
+              username.textContent = contributor.login;
+              
+              const contributions = document.createElement('div');
+              contributions.style.fontSize = '12px';
+              contributions.style.color = '#586069';
+              contributions.textContent = `${contributor.contributions} contributions`;
+              
+              userInfo.appendChild(username);
+              userInfo.appendChild(contributions);
+              
+              contributorInfo.appendChild(avatar);
+              contributorInfo.appendChild(userInfo);
+              
+              const actions = document.createElement('div');
+              actions.style.display = 'flex';
+              actions.style.gap = '5px';
+              
+              const profileButton = document.createElement('a');
+              profileButton.href = contributor.html_url;
+              profileButton.target = '_blank';
+              profileButton.textContent = 'Profile';
+              profileButton.style.padding = '5px 10px';
+              profileButton.style.backgroundColor = '#f6f8fa';
+              profileButton.style.border = '1px solid #e1e4e8';
+              profileButton.style.borderRadius = '4px';
+              profileButton.style.color = '#24292e';
+              profileButton.style.textDecoration = 'none';
+              profileButton.style.fontSize = '12px';
+              
+              const contactButton = document.createElement('button');
+              contactButton.textContent = 'Contact';
+              contactButton.style.padding = '5px 10px';
+              contactButton.style.backgroundColor = '#0366d6';
+              contactButton.style.color = 'white';
+              contactButton.style.border = 'none';
+              contactButton.style.borderRadius = '4px';
+              contactButton.style.cursor = 'pointer';
+              contactButton.style.fontSize = '12px';
+              
+              contactButton.addEventListener('click', () => {
+                window.open(`mailto:?subject=About GitHub Repository: ${repoFullName}&body=Hi ${contributor.login},\n\nI found your contributions to ${repoFullName} interesting and would like to connect.`);
+              });
+              
+              actions.appendChild(profileButton);
+              actions.appendChild(contactButton);
+              
+              contributorItem.appendChild(contributorInfo);
+              contributorItem.appendChild(actions);
+              
+              contributorsList.appendChild(contributorItem);
+            });
+            
+            // Enable connect button
+            connectButton.disabled = false;
+            connectButton.style.opacity = '1';
+            
+            // Add event listener to connect button
+            connectButton.addEventListener('click', () => {
+              const contributorUsernames = topContributors.map(c => c.login).join(', ');
+              window.open(`mailto:?subject=About GitHub Repository: ${repoFullName}&body=Hi team,\n\nI found your project ${repoFullName} interesting and would like to connect with the contributors (${contributorUsernames}).`);
+            });
+          } else {
+            contributorsList.innerHTML = '<div style="text-align: center; padding: 10px; color: #586069;">No contributors found</div>';
+          }
+        } catch (error) {
+          console.error('Error fetching repository details:', error);
+          contributorsList.innerHTML = '<div style="text-align: center; padding: 10px; color: #cb2431;">Error loading contributors</div>';
+        }
       }
       
       // Function to show notifications
